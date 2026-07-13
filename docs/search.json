@@ -46,34 +46,41 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "TODO — a few sentences on who you are as a researcher. For example: your position and institution, that you work in theoretical / particle physics with a focus on Beyond–the–Standard–Model (BSM) phenomenology, the kinds of questions you work on (e.g. extended scalar/gauge sectors, neutrino masses, dark matter, collider or flavour signatures), and the tools you live in day to day (e.g. SARAH, SPheno, FeynRules, MadGraph, micrOMEGAs, Mathematica, Python)."
+    "text": "Postdoc researcher at IF-UNAM, working in theoretical / particle physics with a focus on Beyond–the–Standard–Model (BSM) phenomenology, particularly in the context of extended scalar and gauge sectors. My research interests include neutrino masses, dark matter, and collider/flavour signatures. I am proficient in using tools such as SARAH, SPheno, FeynRules, MadGraph, micrOMEGAs, as well as programming in Python."
   },
   {
     "objectID": "about.html#physics-background",
     "href": "about.html#physics-background",
     "title": "About",
     "section": "",
-    "text": "TODO — a few sentences on who you are as a researcher. For example: your position and institution, that you work in theoretical / particle physics with a focus on Beyond–the–Standard–Model (BSM) phenomenology, the kinds of questions you work on (e.g. extended scalar/gauge sectors, neutrino masses, dark matter, collider or flavour signatures), and the tools you live in day to day (e.g. SARAH, SPheno, FeynRules, MadGraph, micrOMEGAs, Mathematica, Python)."
+    "text": "Postdoc researcher at IF-UNAM, working in theoretical / particle physics with a focus on Beyond–the–Standard–Model (BSM) phenomenology, particularly in the context of extended scalar and gauge sectors. My research interests include neutrino masses, dark matter, and collider/flavour signatures. I am proficient in using tools such as SARAH, SPheno, FeynRules, MadGraph, micrOMEGAs, as well as programming in Python."
   },
   {
     "objectID": "about.html#why-this-log-exists",
     "href": "about.html#why-this-log-exists",
     "title": "About",
     "section": "Why this log exists",
-    "text": "Why this log exists\nTODO — your motivation in your own words. A short version to get you started: I use large language models as part of my research workflow, and I wanted an honest, reproducible record of where they genuinely help and where they don’t — derivations, code, literature triage, model building — without the marketing gloss. See the first post for the longer statement of intent."
+    "text": "Why this log exists\nI use large language models as part of my research workflow, and I wanted an honest, reproducible record of where they genuinely help and where they don’t — derivations, code, literature triage, model building — without the marketing gloss. See the first post for the longer statement of intent."
   },
   {
     "objectID": "about.html#about-the-posts",
     "href": "about.html#about-the-posts",
     "title": "About",
     "section": "About the posts",
-    "text": "About the posts\nEach entry documents a single real task: the tool and model used, the workflow, what worked, what failed, the time saved, and — wherever possible — a link to the code or notebook so you can reproduce it. Posts are written in English or Spanish, one primary language each, with a short abstract in the other language at the top.\n\n\n\n\n\n\nNote\n\n\n\nDetails tied to unpublished results are withheld until the corresponding preprint is public. Reproducibility notes point only to code and material I’m free to share."
+    "text": "About the posts\nEach entry documents a single real task: the tool and model used, the workflow, what worked, what failed, the time saved, and — wherever possible — a link to the code or notebook so you can reproduce it. Posts are written in English or Spanish."
   },
   {
     "objectID": "about.html#contact",
     "href": "about.html#contact",
     "title": "About",
     "section": "Contact",
-    "text": "Contact\n\nEmail: TODO — your-email@example.com\nGitHub: @moiseszeleny\nORCID / arXiv / Scholar: TODO — replace the placeholder links above"
+    "text": "Contact\n\nEmail: moiseszeleny@gmail.com\nGitHub: @moiseszeleny\nORCID: 0000-0001-5964-3551\narXiv: http://arxiv.org/a/zeleny_m_1\nGoogle Scholar: https://scholar.google.com.mx/citations?user=jCGxHQ0AAAAJ&hl=es"
+  },
+  {
+    "objectID": "about.html#the-standard-model-lagrangian",
+    "href": "about.html#the-standard-model-lagrangian",
+    "title": "About",
+    "section": "The Standard Model Lagrangian",
+    "text": "The Standard Model Lagrangian\nThe theory this log ultimately builds on, written by sector:\n\\[\n\\mathcal{L}_{\\text{SM}} = \\mathcal{L}_{\\text{gauge}} + \\mathcal{L}_{\\text{fermion}}\n+ \\mathcal{L}_{\\text{Higgs}} + \\mathcal{L}_{\\text{Yukawa}}\n\\]\n\\[\n\\begin{aligned}\n\\mathcal{L}_{\\text{gauge}}   &= -\\tfrac{1}{4}\\,G^{a}_{\\mu\\nu}G^{a\\,\\mu\\nu}\n                               -\\tfrac{1}{4}\\,W^{i}_{\\mu\\nu}W^{i\\,\\mu\\nu}\n                               -\\tfrac{1}{4}\\,B_{\\mu\\nu}B^{\\mu\\nu}, \\\\[4pt]\n\\mathcal{L}_{\\text{fermion}} &= i\\,\\bar{\\psi}\\,\\gamma^{\\mu} D_{\\mu}\\,\\psi, \\\\[4pt]\n\\mathcal{L}_{\\text{Higgs}}   &= (D_{\\mu}\\phi)^{\\dagger}(D^{\\mu}\\phi) - V(\\phi),\n                               \\qquad V(\\phi) = \\mu^{2}\\,\\phi^{\\dagger}\\phi\n                               + \\lambda\\,(\\phi^{\\dagger}\\phi)^{2}, \\\\[4pt]\n\\mathcal{L}_{\\text{Yukawa}}  &= -\\bigl(\\bar{\\psi}_{L}\\,Y\\,\\psi_{R}\\,\\phi\n                               + \\text{h.c.}\\bigr).\n\\end{aligned}\n\\]\n: where \\(G\\), \\(W\\), \\(B\\) are the \\(SU(3)_C \\times SU(2)_L \\times U(1)_Y\\) field strengths, \\(D_\\mu\\) the gauge-covariant derivative, \\(\\phi\\) the Higgs doublet, and \\(Y\\) the Yukawa matrices."
   }
 ]

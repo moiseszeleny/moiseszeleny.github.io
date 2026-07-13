@@ -1,6 +1,6 @@
 ---
 title: "About"
-subtitle: "Who writes this log, and why."
+subtitle: "A postdoc in theoretical particle physics, using LLMs to accelerate research"
 about:
   template: trestles
   image-shape: rounded
@@ -10,16 +10,16 @@ about:
       href: https://github.com/moiseszeleny
     - icon: envelope
       text: Email
-      href: "mailto:your-email@example.com"        # TODO: replace placeholder
+      href: "moiseszeleny@gmail.com"        # TODO: replace placeholder
     - icon: mortarboard
       text: ORCID
-      href: "https://orcid.org/0000-0000-0000-0000" # TODO: replace placeholder
+      href: "https://orcid.org/0000-0001-5964-3551" # TODO: replace placeholder
     - icon: file-earmark-text
       text: arXiv
-      href: "https://arxiv.org/a/your-arxiv-id"      # TODO: replace placeholder
+      href: "http://arxiv.org/a/zeleny_m_1"      # TODO: replace placeholder
     - icon: google
       text: Scholar
-      href: "https://scholar.google.com/citations?user=YOUR_ID" # TODO: replace
+      href: "https://scholar.google.com.mx/citations?user=jCGxHQ0AAAAJ&hl=es" # TODO: replace
 ---
 
 <!-- =========================================================================
@@ -29,17 +29,38 @@ about:
 
 ## Physics background
 
-*TODO — a few sentences on who you are as a researcher.* For example: your
-position and institution, that you work in **theoretical / particle physics**
-with a focus on **Beyond–the–Standard–Model (BSM) phenomenology**, the kinds of
-questions you work on (e.g. extended scalar/gauge sectors, neutrino masses, dark
-matter, collider or flavour signatures), and the tools you live in day to day
-(e.g. `SARAH`, `SPheno`, `FeynRules`, `MadGraph`, `micrOMEGAs`, Mathematica,
-Python).
+Postdoc researcher at IF-UNAM, working in **theoretical / particle physics**
+with a focus on **Beyond–the–Standard–Model (BSM) phenomenology**, particularly in the context of **extended scalar and gauge sectors**. My research interests include **neutrino masses, dark matter, and collider/flavour signatures**. I am proficient in using tools such as `SARAH`, `SPheno`, `FeynRules`, `MadGraph`, `micrOMEGAs`, as well as programming in **Python**.
+
+## The Standard Model Lagrangian
+
+The theory this log ultimately builds on, written by sector:
+
+$$
+\mathcal{L}_{\text{SM}} = \mathcal{L}_{\text{gauge}} + \mathcal{L}_{\text{fermion}}
++ \mathcal{L}_{\text{Higgs}} + \mathcal{L}_{\text{Yukawa}}
+$$
+
+$$
+\begin{aligned}
+\mathcal{L}_{\text{gauge}}   &= -\tfrac{1}{4}\,G^{a}_{\mu\nu}G^{a\,\mu\nu}
+                               -\tfrac{1}{4}\,W^{i}_{\mu\nu}W^{i\,\mu\nu}
+                               -\tfrac{1}{4}\,B_{\mu\nu}B^{\mu\nu}, \\[4pt]
+\mathcal{L}_{\text{fermion}} &= i\,\bar{\psi}\,\gamma^{\mu} D_{\mu}\,\psi, \\[4pt]
+\mathcal{L}_{\text{Higgs}}   &= (D_{\mu}\phi)^{\dagger}(D^{\mu}\phi) - V(\phi),
+                               \qquad V(\phi) = \mu^{2}\,\phi^{\dagger}\phi
+                               + \lambda\,(\phi^{\dagger}\phi)^{2}, \\[4pt]
+\mathcal{L}_{\text{Yukawa}}  &= -\bigl(\bar{\psi}_{L}\,Y\,\psi_{R}\,\phi
+                               + \text{h.c.}\bigr).
+\end{aligned}
+$$
+
+: where $G$, $W$, $B$ are the $SU(3)_C \times SU(2)_L \times U(1)_Y$ field strengths,
+$D_\mu$ the gauge-covariant derivative, $\phi$ the Higgs doublet, and $Y$ the Yukawa
+matrices.
 
 ## Why this log exists
 
-*TODO — your motivation in your own words.* A short version to get you started:
 I use large language models as part of my research workflow, and I wanted an
 honest, reproducible record of **where they genuinely help and where they
 don't** — derivations, code, literature triage, model building — without the
@@ -51,17 +72,12 @@ longer statement of intent.
 Each entry documents a single **real task**: the tool and model used, the
 workflow, what worked, what failed, the time saved, and — wherever possible — a
 link to the code or notebook so you can reproduce it. Posts are written in
-**English or Spanish**, one primary language each, with a short abstract in the
-other language at the top.
-
-::: {.callout-note}
-Details tied to **unpublished results** are withheld until the corresponding
-preprint is public. Reproducibility notes point only to code and material I'm
-free to share.
-:::
+**English or Spanish**.
 
 ## Contact
 
-- **Email:** *TODO — your-email@example.com*
+- **Email:** moiseszeleny@gmail.com
 - **GitHub:** [\@moiseszeleny](https://github.com/moiseszeleny)
-- **ORCID / arXiv / Scholar:** *TODO — replace the placeholder links above*
+- **ORCID:** [0000-0001-5964-3551](https://orcid.org/0000-0001-5964-3551)
+- **arXiv:** [http://arxiv.org/a/zeleny_m_1](http://arxiv.org/a/zeleny_m_1)
+- **Google Scholar:** [https://scholar.google.com.mx/citations?user=jCGxHQ0AAAAJ&hl=es](https://scholar.google.com.mx/citations?user=jCGxHQ0AAAAJ&hl=es)
