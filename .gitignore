@@ -10,7 +10,9 @@
 *.swp
 Thumbs.db
 
-# NOTE: /docs is intentionally NOT ignored — GitHub Pages serves the
-# rendered site from it.
+# Rendered site output. GitHub Pages is now built & deployed by the
+# "Publish site" Action (source: GitHub Actions), so /docs is no longer
+# tracked — CI renders it on each push. It still exists locally for previews.
+/docs/
 
 **/*.quarto_ipynb

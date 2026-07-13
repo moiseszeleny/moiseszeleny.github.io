@@ -59,6 +59,8 @@ $$
 $D_\mu$ the gauge-covariant derivative, $\phi$ the Higgs doublet, and $Y$ the Yukawa
 matrices.
 
+Beyond the Standard Model (BSM) physics is often explored by extending this Lagrangian with additional fields, symmetries, or interactions. My work focuses on analyzing these extensions and their phenomenological implications.
+
 ## Why this log exists
 
 I use large language models as part of my research workflow, and I wanted an
