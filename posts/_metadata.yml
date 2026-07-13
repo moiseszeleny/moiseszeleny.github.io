@@ -1,0 +1,15 @@
+# Options here apply to every post in this folder.
+
+# Freeze computational output so posts don't re-execute on every render
+# (see https://quarto.org/docs/projects/code-execution.html#freeze)
+freeze: true
+
+# Clean, restrained title blocks (no banner) to match the academic theme.
+title-block-banner: false
+
+# Show author + reading time on each post.
+title-block-style: default
+reading-time: true
+
+# Give each post its own table of contents.
+toc: true

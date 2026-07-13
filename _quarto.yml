@@ -1,0 +1,44 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Physics boosted with LLMs"
+  description: "A personal research log on using large language models in theoretical/particle physics (BSM phenomenology)."
+  site-url: https://moiseszeleny.github.io
+  favicon: favicon.svg
+  navbar:
+    pinned: true
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Posts"
+        href: index.qmd
+      - text: "About"
+        href: about.qmd
+    right:
+      - icon: github
+        href: https://github.com/moiseszeleny
+        aria-label: GitHub
+  page-footer:
+    center: |
+      © 2026 Moises Zeleny &middot; Built with [Quarto](https://quarto.org) &middot;
+      Content licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+format:
+  html:
+    theme:
+      - theme.scss
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    anchor-sections: true
+    html-math-method: mathjax
+    fig-cap-location: bottom
+    link-external-newwindow: true
+    include-after-body: _includes/language-badges.html
+
+# Site-wide author metadata (individual posts can override)
+author:
+  - name: "Moises Zeleny"

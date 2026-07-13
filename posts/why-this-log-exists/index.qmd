@@ -1,0 +1,111 @@
+---
+title: "Why this log exists"
+description: "Starting an honest, reproducible record of where LLMs help — and don't — in BSM/phenomenology research."
+author: "Moises Zeleny"
+date: "2026-07-12"
+categories: [English, meta, workflow]
+lang: en
+---
+
+::: {.abstract-alt}
+[Resumen (Español)]{.abstract-label}
+
+Inicio esta bitácora para documentar, de forma honesta y reproducible, cómo uso
+modelos de lenguaje (LLMs) en mi investigación en física teórica de partículas,
+concretamente en fenomenología más allá del Modelo Estándar (BSM). Cada entrada
+describirá una tarea real: la herramienta y el modelo usados, el flujo de
+trabajo, qué funcionó, qué falló, el tiempo ahorrado y —cuando sea posible— un
+enlace al código o cuaderno para reproducirlo. Sin exageraciones: derivaciones
+reales y fracasos honestos. Los detalles ligados a resultados aún no publicados
+se reservarán hasta que aparezca el *preprint* correspondiente.
+:::
+
+## Why I'm starting this log
+
+I use large language models in my day-to-day research, and I've grown tired of
+two equally unhelpful narratives: the one where LLMs are about to do physics for
+us, and the one where they're stochastic parrots useless for anything serious.
+Neither matches what I actually experience at the desk.
+
+What I experience is more interesting and more mundane: a tool that is
+**genuinely useful for specific sub-tasks**, unreliable for others, and
+occasionally confidently wrong in ways that cost real time. The only way to know
+which is which is to keep records. So this is that record — a lab notebook for a
+particular kind of instrument.
+
+The audience I have in mind is other researchers, particularly in theoretical
+and particle physics. If you work in **BSM phenomenology** — extended scalar or
+gauge sectors, neutrino mass mechanisms, dark matter, flavour, collider
+signatures — I hope some of these notes save you the trouble of rediscovering
+the same failure modes I do.
+
+## Where LLMs currently help (and where they don't)
+
+This is a snapshot of my current, revisable opinion. Part of the point of the
+log is to hold these claims accountable over time.
+
+**Where they help me today:**
+
+- **Boilerplate and glue code.** Parsing `SLHA` output, wiring up scans,
+  reshaping data for plots, `matplotlib`/`pandas` scaffolding. Fast to write,
+  fast to verify.
+- **Translating between tools and formalisms.** Sketching a `FeynRules` or
+  `SARAH` model fragment, converting a Lagrangian term to a rough vertex, moving
+  a snippet between Mathematica and Python.
+- **Literature triage and orientation.** Getting a first map of an unfamiliar
+  corner of the literature, or rephrasing a half-remembered result into
+  searchable terms — always as a *pointer*, never as a citation.
+- **Rubber-ducking derivations.** Talking through an index contraction, a loop
+  integral reduction, or a symmetry argument, where I remain the one who checks
+  every line.
+
+**Where they don't (yet):**
+
+- **Anything requiring a guaranteed-correct derivation.** Signs, factors of 2,
+  $\gamma^5$ conventions, and $\overline{\text{MS}}$ subtleties are exactly where
+  fluent-sounding output is most dangerous.
+- **Numerical values and citations.** Confidently fabricated branching ratios or
+  reference lists remain a real hazard.
+- **Genuinely novel model building.** They recombine the known well; they do not
+  reliably produce the constraint I hadn't thought of.
+
+A concrete example of the trap: an LLM will happily produce a one-loop
+contribution that *looks* right — correct structure, plausible prefactor — and
+be wrong by a sign or a $1/(4\pi)^2$. The expression typesets beautifully:
+
+$$
+\Delta a_\mu \;\sim\; \frac{m_\mu^2}{16\pi^2 M^2}\, \sum_i c_i\, F(x_i),
+$$
+
+and the only defence is to derive it yourself and treat the model's version as a
+hypothesis to be checked, not an answer.
+
+## What you can expect here
+
+- **Real tasks, not toy demos.** Every post is something I actually needed done.
+- **The whole workflow**, including the prompts and the dead ends — not a
+  cleaned-up highlight reel.
+- **Honest failure reports.** When a model wastes an hour, that's a post too;
+  those are often the most useful ones.
+- **Time-saved estimates**, stated as honestly as I can, with the caveat that
+  verification time is part of the accounting.
+- **Reproducibility notes.** Where I can, each post links to code or a notebook
+  so you can run it yourself. Where I can't, I'll say why.
+- **No hype.** If an LLM didn't help, the post will say so plainly.
+
+## A note on unpublished results
+
+Some of this work touches ongoing projects. **Details tied to unpublished
+results — specific models, parameter points, numerical findings — will be
+withheld until the corresponding preprint is public.** In those cases I'll
+document the *method and workflow* (which is the transferable part) while
+holding back the result itself, and I'll update the post with a link once the
+preprint is out. Reproducibility material will only ever point to things I'm
+free to share.
+
+That's the charter. The next post will be an actual task.
+
+::: {.callout-note appearance="simple"}
+**Reproducibility note.** This inaugural post is a statement of intent and has no
+associated code. Future posts will link to a repository or notebook here.
+:::

@@ -1,0 +1,22 @@
+---
+title: "Physics boosted with LLMs"
+subtitle: "A working log of how large language models actually help (and fail) in BSM phenomenology research."
+listing:
+  contents: posts
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: false
+  filter-ui: true
+  feed: true
+  fields: [date, title, description, categories, reading-time]
+page-layout: article
+title-block-banner: false
+---
+
+::: {.lead-note}
+Each post documents one **real research task**: the tool and model used, the workflow,
+what worked, what failed, the time it saved, and — where possible — a link to code or a
+notebook so you can reproduce it. Posts are tagged **English** or **Español**; use the
+filter above to narrow by language or topic.
+:::

@@ -1,0 +1,277 @@
+/*-- scss:defaults --*/
+// ============================================================================
+//  Physics boosted with LLMs — custom academic theme
+//  Clean, restrained, print-adjacent. Serif body, muted slate accent,
+//  generous whitespace, and clear code/math typography.
+// ============================================================================
+
+// ---- Type -------------------------------------------------------------------
+// High-quality system serif for reading; system sans for UI/headings; a
+// crisp monospace for code. No web-font fetch (fast, offline, reproducible).
+$font-family-serif:      "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif !default;
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
+$font-family-monospace:  "JetBrains Mono", "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !default;
+
+$font-family-base: $font-family-serif;
+$headings-font-family: $font-family-sans-serif;
+
+$font-size-root: 19px;
+$line-height-base: 1.7;
+$headings-font-weight: 600;
+$headings-line-height: 1.25;
+
+// ---- Color ------------------------------------------------------------------
+// Warm near-white paper, ink-grey text, muted slate-blue accent.
+$paper:        #fcfcfa;
+$ink:          #22262b;
+$ink-soft:     #4a5158;
+$accent:       #3a5a7a;   // muted slate blue
+$accent-deep:  #2b4459;
+$rule:         #e6e3dc;   // hairline borders on warm paper
+
+$body-bg:      $paper;
+$body-color:   $ink;
+$link-color:   $accent;
+$link-hover-color: $accent-deep;
+$primary:      $accent;
+$border-color: $rule;
+
+// Code surfaces
+$code-color:         #b23a48;   // muted brick for inline code
+$code-bg:            #f4f2ec;
+$code-block-bg:      #f7f5ef;
+$code-block-border-left: $accent;
+
+// Selection
+$body-secondary: $ink-soft;
+
+/*-- scss:rules --*/
+// ============================================================================
+
+// ---- Reading measure & rhythm ----------------------------------------------
+.page-columns .content,
+main.content {
+  // Comfortable measure for long-form reading.
+  p, ul, ol, blockquote, .lead-note {
+    max-width: 44rem;
+  }
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  letter-spacing: 0.1px;
+}
+
+// ---- Headings ---------------------------------------------------------------
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.01em;
+  color: $ink;
+}
+
+h1.title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle, p.subtitle {
+  font-family: $font-family-sans-serif;
+  font-weight: 400;
+  color: $ink-soft;
+  font-size: 1.15rem;
+  line-height: 1.5;
+}
+
+// Quiet section rule under h2 for structure without heaviness.
+h2 {
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid $rule;
+  margin-top: 2.6rem;
+}
+
+// ---- Links ------------------------------------------------------------------
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba($accent, 0.35);
+  transition: text-decoration-color 0.15s ease, color 0.15s ease;
+}
+a:hover {
+  text-decoration-color: $accent-deep;
+}
+
+// ---- Lead note / callout on the landing page --------------------------------
+.lead-note {
+  font-family: $font-family-sans-serif;
+  font-size: 1.02rem;
+  color: $ink-soft;
+  border-left: 3px solid $accent;
+  padding: 0.4rem 0 0.4rem 1.1rem;
+  margin: 1.6rem 0 2.2rem;
+}
+
+// ---- Navbar -----------------------------------------------------------------
+.navbar {
+  font-family: $font-family-sans-serif;
+  border-bottom: 1px solid $rule;
+  background-color: $paper !important;
+}
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.navbar .nav-link {
+  font-weight: 500;
+}
+
+// ---- Blockquote -------------------------------------------------------------
+blockquote {
+  border-left: 3px solid $rule;
+  color: $ink-soft;
+  font-style: italic;
+  padding-left: 1.1rem;
+}
+
+// ---- Inline code ------------------------------------------------------------
+code:not(.sourceCode):not(pre code) {
+  background: $code-bg;
+  color: $code-color;
+  padding: 0.12em 0.4em;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+// ---- Code blocks ------------------------------------------------------------
+div.sourceCode,
+pre {
+  background-color: $code-block-bg !important;
+  border: 1px solid $rule;
+  border-left: 3px solid $accent;
+  border-radius: 6px;
+}
+pre code {
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+// Copy button, quieter
+.code-copy-button {
+  color: $ink-soft;
+}
+
+// ---- Math (MathJax) ---------------------------------------------------------
+// Display equations: a touch more breathing room and gentle horizontal scroll
+// for wide expressions instead of overflow.
+mjx-container[display="true"] {
+  margin: 1.1rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.2rem 0;
+}
+mjx-container {
+  font-size: 1.02em !important;
+}
+
+// ---- Tables -----------------------------------------------------------------
+.table {
+  font-size: 0.95rem;
+}
+.table > thead {
+  border-bottom: 2px solid $ink-soft;
+  font-family: $font-family-sans-serif;
+}
+.table th, .table td {
+  border-color: $rule;
+}
+
+// ---- Listing (post index) ---------------------------------------------------
+.quarto-listing {
+  margin-top: 1.5rem;
+}
+.listing-title {
+  font-family: $font-family-sans-serif;
+  font-weight: 600;
+}
+.listing-description {
+  color: $ink-soft;
+}
+.listing-date, .listing-reading-time {
+  font-family: $font-family-sans-serif;
+  color: $ink-soft;
+  font-size: 0.85rem;
+}
+
+// Category pills — used to carry the English / Español language badge plus
+// topic tags. Give them a quiet outlined look; highlight language tags.
+.quarto-category,
+.listing-category {
+  font-family: $font-family-sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: 1px solid $rule;
+  background: transparent;
+  color: $ink-soft;
+  border-radius: 999px;
+  padding: 0.12em 0.7em;
+  opacity: 1;
+}
+.quarto-category:hover {
+  color: $accent-deep;
+  border-color: $accent;
+}
+// Language badges stand out from topic tags (class added by
+// _includes/language-badges.html based on the pill text).
+.listing-category.lang-badge {
+  color: #fff;
+  background: $accent;
+  border-color: $accent;
+  font-weight: 600;
+}
+.listing-category.lang-badge:hover {
+  color: #fff;
+  background: $accent-deep;
+}
+
+// ---- Category cloud in the sidebar/top --------------------------------------
+.quarto-listing-category .category {
+  font-family: $font-family-sans-serif;
+}
+
+// ---- TOC --------------------------------------------------------------------
+#TOC, .toc-active {
+  font-family: $font-family-sans-serif;
+  font-size: 0.85rem;
+}
+#TOC .active {
+  color: $accent-deep;
+  font-weight: 600;
+}
+
+// ---- Footer -----------------------------------------------------------------
+.nav-footer {
+  font-family: $font-family-sans-serif;
+  font-size: 0.85rem;
+  color: $ink-soft;
+  border-top: 1px solid $rule;
+}
+
+// ---- Abstract box (bilingual abstract at top of posts) ----------------------
+.abstract-alt {
+  font-family: $font-family-sans-serif;
+  font-size: 0.95rem;
+  background: $code-block-bg;
+  border: 1px solid $rule;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin: 1.4rem 0 2rem;
+  color: $ink-soft;
+}
+.abstract-alt .abstract-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: $accent;
+  margin-bottom: 0.35rem;
+}

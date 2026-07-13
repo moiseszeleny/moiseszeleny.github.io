@@ -1,0 +1,20 @@
+<script>
+// Tag the language category pills (English / Español) in the post listing so
+// they can be styled distinctly from topic tags. Quarto renders per-post
+// categories as bare `.listing-category` spans with no slug class, so we add
+// one based on the visible text.
+(function () {
+  var LANGS = { "english": "lang-en", "español": "lang-es", "espanol": "lang-es" };
+  function tag() {
+    document.querySelectorAll(".listing-category").forEach(function (el) {
+      var key = (el.textContent || "").trim().toLowerCase();
+      if (LANGS[key]) { el.classList.add("lang-badge", LANGS[key]); }
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", tag);
+  } else {
+    tag();
+  }
+})();
+</script>

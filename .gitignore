@@ -1,0 +1,16 @@
+# Quarto
+/.quarto/
+*_files/
+.DS_Store
+
+# Claude Code local settings (not part of the site)
+.claude/
+
+# Editor / OS cruft
+*.swp
+Thumbs.db
+
+# NOTE: /docs is intentionally NOT ignored — GitHub Pages serves the
+# rendered site from it.
+
+**/*.quarto_ipynb

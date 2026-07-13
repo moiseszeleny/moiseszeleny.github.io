@@ -1,0 +1,79 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Physics boosted with LLMs",
+    "section": "",
+    "text": "Each post documents one real research task: the tool and model used, the workflow, what worked, what failed, the time it saved, and — where possible — a link to code or a notebook so you can reproduce it. Posts are tagged English or Español; use the filter above to narrow by language or topic.\n\n\n\n\n\n\n\n    \n      \n      \n    \n\n\n\n\n\nWhy this log exists\n\n\n\nEnglish\n\nmeta\n\nworkflow\n\n\n\nStarting an honest, reproducible record of where LLMs help — and don’t — in BSM/phenomenology research.\n\n\n\n\n\nJul 12, 2026\n\n4 min\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/why-this-log-exists/index.html",
+    "href": "posts/why-this-log-exists/index.html",
+    "title": "Why this log exists",
+    "section": "",
+    "text": "Resumen (Español)\nInicio esta bitácora para documentar, de forma honesta y reproducible, cómo uso modelos de lenguaje (LLMs) en mi investigación en física teórica de partículas, concretamente en fenomenología más allá del Modelo Estándar (BSM). Cada entrada describirá una tarea real: la herramienta y el modelo usados, el flujo de trabajo, qué funcionó, qué falló, el tiempo ahorrado y —cuando sea posible— un enlace al código o cuaderno para reproducirlo. Sin exageraciones: derivaciones reales y fracasos honestos. Los detalles ligados a resultados aún no publicados se reservarán hasta que aparezca el preprint correspondiente."
+  },
+  {
+    "objectID": "posts/why-this-log-exists/index.html#why-im-starting-this-log",
+    "href": "posts/why-this-log-exists/index.html#why-im-starting-this-log",
+    "title": "Why this log exists",
+    "section": "Why I’m starting this log",
+    "text": "Why I’m starting this log\nI use large language models in my day-to-day research, and I’ve grown tired of two equally unhelpful narratives: the one where LLMs are about to do physics for us, and the one where they’re stochastic parrots useless for anything serious. Neither matches what I actually experience at the desk.\nWhat I experience is more interesting and more mundane: a tool that is genuinely useful for specific sub-tasks, unreliable for others, and occasionally confidently wrong in ways that cost real time. The only way to know which is which is to keep records. So this is that record — a lab notebook for a particular kind of instrument.\nThe audience I have in mind is other researchers, particularly in theoretical and particle physics. If you work in BSM phenomenology — extended scalar or gauge sectors, neutrino mass mechanisms, dark matter, flavour, collider signatures — I hope some of these notes save you the trouble of rediscovering the same failure modes I do."
+  },
+  {
+    "objectID": "posts/why-this-log-exists/index.html#where-llms-currently-help-and-where-they-dont",
+    "href": "posts/why-this-log-exists/index.html#where-llms-currently-help-and-where-they-dont",
+    "title": "Why this log exists",
+    "section": "Where LLMs currently help (and where they don’t)",
+    "text": "Where LLMs currently help (and where they don’t)\nThis is a snapshot of my current, revisable opinion. Part of the point of the log is to hold these claims accountable over time.\nWhere they help me today:\n\nBoilerplate and glue code. Parsing SLHA output, wiring up scans, reshaping data for plots, matplotlib/pandas scaffolding. Fast to write, fast to verify.\nTranslating between tools and formalisms. Sketching a FeynRules or SARAH model fragment, converting a Lagrangian term to a rough vertex, moving a snippet between Mathematica and Python.\nLiterature triage and orientation. Getting a first map of an unfamiliar corner of the literature, or rephrasing a half-remembered result into searchable terms — always as a pointer, never as a citation.\nRubber-ducking derivations. Talking through an index contraction, a loop integral reduction, or a symmetry argument, where I remain the one who checks every line.\n\nWhere they don’t (yet):\n\nAnything requiring a guaranteed-correct derivation. Signs, factors of 2, \\(\\gamma^5\\) conventions, and \\(\\overline{\\text{MS}}\\) subtleties are exactly where fluent-sounding output is most dangerous.\nNumerical values and citations. Confidently fabricated branching ratios or reference lists remain a real hazard.\nGenuinely novel model building. They recombine the known well; they do not reliably produce the constraint I hadn’t thought of.\n\nA concrete example of the trap: an LLM will happily produce a one-loop contribution that looks right — correct structure, plausible prefactor — and be wrong by a sign or a \\(1/(4\\pi)^2\\). The expression typesets beautifully:\n\\[\n\\Delta a_\\mu \\;\\sim\\; \\frac{m_\\mu^2}{16\\pi^2 M^2}\\, \\sum_i c_i\\, F(x_i),\n\\]\nand the only defence is to derive it yourself and treat the model’s version as a hypothesis to be checked, not an answer."
+  },
+  {
+    "objectID": "posts/why-this-log-exists/index.html#what-you-can-expect-here",
+    "href": "posts/why-this-log-exists/index.html#what-you-can-expect-here",
+    "title": "Why this log exists",
+    "section": "What you can expect here",
+    "text": "What you can expect here\n\nReal tasks, not toy demos. Every post is something I actually needed done.\nThe whole workflow, including the prompts and the dead ends — not a cleaned-up highlight reel.\nHonest failure reports. When a model wastes an hour, that’s a post too; those are often the most useful ones.\nTime-saved estimates, stated as honestly as I can, with the caveat that verification time is part of the accounting.\nReproducibility notes. Where I can, each post links to code or a notebook so you can run it yourself. Where I can’t, I’ll say why.\nNo hype. If an LLM didn’t help, the post will say so plainly."
+  },
+  {
+    "objectID": "posts/why-this-log-exists/index.html#a-note-on-unpublished-results",
+    "href": "posts/why-this-log-exists/index.html#a-note-on-unpublished-results",
+    "title": "Why this log exists",
+    "section": "A note on unpublished results",
+    "text": "A note on unpublished results\nSome of this work touches ongoing projects. Details tied to unpublished results — specific models, parameter points, numerical findings — will be withheld until the corresponding preprint is public. In those cases I’ll document the method and workflow (which is the transferable part) while holding back the result itself, and I’ll update the post with a link once the preprint is out. Reproducibility material will only ever point to things I’m free to share.\nThat’s the charter. The next post will be an actual task.\n\n\n\n\n\n\nReproducibility note. This inaugural post is a statement of intent and has no associated code. Future posts will link to a repository or notebook here."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "TODO — a few sentences on who you are as a researcher. For example: your position and institution, that you work in theoretical / particle physics with a focus on Beyond–the–Standard–Model (BSM) phenomenology, the kinds of questions you work on (e.g. extended scalar/gauge sectors, neutrino masses, dark matter, collider or flavour signatures), and the tools you live in day to day (e.g. SARAH, SPheno, FeynRules, MadGraph, micrOMEGAs, Mathematica, Python)."
+  },
+  {
+    "objectID": "about.html#physics-background",
+    "href": "about.html#physics-background",
+    "title": "About",
+    "section": "",
+    "text": "TODO — a few sentences on who you are as a researcher. For example: your position and institution, that you work in theoretical / particle physics with a focus on Beyond–the–Standard–Model (BSM) phenomenology, the kinds of questions you work on (e.g. extended scalar/gauge sectors, neutrino masses, dark matter, collider or flavour signatures), and the tools you live in day to day (e.g. SARAH, SPheno, FeynRules, MadGraph, micrOMEGAs, Mathematica, Python)."
+  },
+  {
+    "objectID": "about.html#why-this-log-exists",
+    "href": "about.html#why-this-log-exists",
+    "title": "About",
+    "section": "Why this log exists",
+    "text": "Why this log exists\nTODO — your motivation in your own words. A short version to get you started: I use large language models as part of my research workflow, and I wanted an honest, reproducible record of where they genuinely help and where they don’t — derivations, code, literature triage, model building — without the marketing gloss. See the first post for the longer statement of intent."
+  },
+  {
+    "objectID": "about.html#about-the-posts",
+    "href": "about.html#about-the-posts",
+    "title": "About",
+    "section": "About the posts",
+    "text": "About the posts\nEach entry documents a single real task: the tool and model used, the workflow, what worked, what failed, the time saved, and — wherever possible — a link to the code or notebook so you can reproduce it. Posts are written in English or Spanish, one primary language each, with a short abstract in the other language at the top.\n\n\n\n\n\n\nNote\n\n\n\nDetails tied to unpublished results are withheld until the corresponding preprint is public. Reproducibility notes point only to code and material I’m free to share."
+  },
+  {
+    "objectID": "about.html#contact",
+    "href": "about.html#contact",
+    "title": "About",
+    "section": "Contact",
+    "text": "Contact\n\nEmail: TODO — your-email@example.com\nGitHub: @moiseszeleny\nORCID / arXiv / Scholar: TODO — replace the placeholder links above"
+  }
+]

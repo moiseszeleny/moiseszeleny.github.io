@@ -1,0 +1,67 @@
+---
+title: "About"
+subtitle: "Who writes this log, and why."
+about:
+  template: trestles
+  image-shape: rounded
+  links:
+    - icon: github
+      text: GitHub
+      href: https://github.com/moiseszeleny
+    - icon: envelope
+      text: Email
+      href: "mailto:your-email@example.com"        # TODO: replace placeholder
+    - icon: mortarboard
+      text: ORCID
+      href: "https://orcid.org/0000-0000-0000-0000" # TODO: replace placeholder
+    - icon: file-earmark-text
+      text: arXiv
+      href: "https://arxiv.org/a/your-arxiv-id"      # TODO: replace placeholder
+    - icon: google
+      text: Scholar
+      href: "https://scholar.google.com/citations?user=YOUR_ID" # TODO: replace
+---
+
+<!-- =========================================================================
+     PLACEHOLDER BIO — fill these sections in. Everything below is a draft
+     scaffold for you (Moises) to edit. Delete these HTML comments when done.
+     ========================================================================= -->
+
+## Physics background
+
+*TODO — a few sentences on who you are as a researcher.* For example: your
+position and institution, that you work in **theoretical / particle physics**
+with a focus on **Beyond–the–Standard–Model (BSM) phenomenology**, the kinds of
+questions you work on (e.g. extended scalar/gauge sectors, neutrino masses, dark
+matter, collider or flavour signatures), and the tools you live in day to day
+(e.g. `SARAH`, `SPheno`, `FeynRules`, `MadGraph`, `micrOMEGAs`, Mathematica,
+Python).
+
+## Why this log exists
+
+*TODO — your motivation in your own words.* A short version to get you started:
+I use large language models as part of my research workflow, and I wanted an
+honest, reproducible record of **where they genuinely help and where they
+don't** — derivations, code, literature triage, model building — without the
+marketing gloss. See the [first post](../posts/why-this-log-exists/) for the
+longer statement of intent.
+
+## About the posts
+
+Each entry documents a single **real task**: the tool and model used, the
+workflow, what worked, what failed, the time saved, and — wherever possible — a
+link to the code or notebook so you can reproduce it. Posts are written in
+**English or Spanish**, one primary language each, with a short abstract in the
+other language at the top.
+
+::: {.callout-note}
+Details tied to **unpublished results** are withheld until the corresponding
+preprint is public. Reproducibility notes point only to code and material I'm
+free to share.
+:::
+
+## Contact
+
+- **Email:** *TODO — your-email@example.com*
+- **GitHub:** [\@moiseszeleny](https://github.com/moiseszeleny)
+- **ORCID / arXiv / Scholar:** *TODO — replace the placeholder links above*
