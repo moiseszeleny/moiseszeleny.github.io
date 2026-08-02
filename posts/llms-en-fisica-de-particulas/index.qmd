@@ -1,0 +1,459 @@
+---
+title: "LLMs en física teórica: ¿dónde están ahora?"
+description: "¿Por qué la comunidad de física teórica no adoptó antes las herramientas computacionales? y ¿por qué los LLMs están cambiando eso?"
+author: "Moises Zeleny"
+date: "2026-07-27"
+categories: [Español, reflexión, llms, meta]
+lang: es
+bibliography: refs.bib
+---
+
+::: {.callout-note appearance="simple"}
+**English version available.** This post is also available [in English](/posts/llms-in-particle-physics-now/).
+:::
+
+## La cuenta que todavía se hace a mano
+
+La física teórica de partículas es, para sorpresa de nadie, una disciplina
+donde la mayor parte de los cálculos se hacen a mano. Esto no es un defecto ni
+una nostalgia: es la forma en que un investigador internaliza el
+comportamiento de un modelo, detecta cancelaciones sutiles y desarrolla
+intuición física. Esa habilidad no va a desaparecer, ni debería. La derivación
+a pulso sigue siendo el entrenamiento central del oficio.
+
+Pero no es la única forma de trabajar. Desde hace décadas existen herramientas
+computacionales diseñadas precisamente para automatizar partes del proceso:
+`FeynRules` y `SARAH` para construir modelos y derivar vértices; `MadGraph`
+para amplitudes y simulaciones en colisionadores; `SPheno` y `micrOMEGAs` para observables; `FeynCalc` y `Package-X` para computo de amplitudes, reducción tensorial y de lazos. La lista es larga. Y sin embargo, el uso rutinario de estas herramientas está lejos de ser universal.
+Muchos grupos siguen haciendo a mano lo que una computadora podría hacer en
+segundos, no porque desconfíen del resultado, sino porque la barrera de
+entrada a la herramienta es más alta que la barrera de salida del cálculo
+manual.
+
+El problema, en mi experiencia, es triple:
+
+1. **Documentación escasa u opaca.** Manuales que asumen que el usuario ya
+   conoce la arquitectura interna del paquete; tutoriales que se rompen con la
+   primera actualización; ejemplos que cubren el caso trivial pero no el que
+   uno necesita
+2. **Curvas de aprendizaje empinadas.** Instalar, configurar y producir un
+   primer resultado útil con `SARAH` o `FeynRules` puede tomar días. Cada
+   herramienta tiene su propio lenguaje de entrada, sus propias convenciones,
+   sus propios mensajes de error crípticos.
+3. **Falta de puentes entre herramientas.** El resultado de una se convierte
+   manualmente en la entrada de otra, en formatos incompatibles, mediante
+   scripts ad-hoc que cada grupo mantiene por separado.
+
+El costo de *aprender la herramienta* frecuentemente supera el costo de
+*hacer la cuenta a mano* (lo que se encuentra mayormente claro en la literatura y el oficio).
+Y así, herramientas poderosas se subutilizan.
+
+## Lo que cambió con los LLMs
+
+Esta es, creo, la contribución más genuina y menos publicitada de los modelos
+de lenguaje a la física teórica. No es —o no es todavía— que deriven mejor que
+un humano. Es que **traducen la intención en lenguaje natural a la invocación
+concreta de una herramienta, su documentación o su código de entrada**. Un
+LLM puede:
+
+- Leer un Lagrangiano en notación estándar y producir el archivo de modelo
+  correspondiente para `FeynRules` o `SARAH`, con las convenciones correctas.
+- Explicar un mensaje de error oscuro de `SPheno` en términos del modelo que
+  uno está construyendo.
+- Generar el script de `MadGraph` para un proceso específico a partir de una
+  descripción en lenguaje natural, incluyendo cortes y formatos de salida.
+- Escribir el pegamento entre dos herramientas —el *script* que toma la salida
+  de una y la convierte en la entrada de la otra— evitando la fase de leer dos
+  manuales distintos.
+
+La barrera que los LLMs están bajando no es entre el físico y la física, sino
+entre el físico y las herramientas computacionales que ya están en su
+máquina. Y la evidencia de que esto está ocurriendo no es anecdótica: en los
+últimos dos años ha aparecido un cuerpo de literatura que vale la pena repasar
+con algún detalle.
+
+## Lo que se ha construido (2022–2026)
+
+Lo que sigue es un recorrido por trabajos recientes que, de una forma u otra,
+usan LLMs para tender puentes entre el físico teórico y las herramientas
+computacionales del oficio. No es exhaustivo; es representativo. La
+@fig-timeline resume la cronología: las publicaciones de física teórica con
+LLMs (eje inferior) se agrupan con un retraso de dos a tres años respecto a
+los hitos de los propios modelos (eje superior) —el tiempo que tarda la
+comunidad en asimilar cada nueva capacidad como herramienta de investigación—.
+
+```{python}
+#| label: fig-timeline
+#| fig-cap: "Cronología de hitos en LLMs (arriba) y de trabajos de física teórica que los adoptan (abajo). El eje inferior usa un quiebre: a la izquierda, los dos trabajos de 2025; a la derecha, el grupo denso de marzo–junio de 2026 ampliado."
+#| code-fold: true
+#| code-summary: "Mostrar el código"
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from datetime import datetime, timedelta
+
+# --- Estilo académico, paleta del sitio ---------------------------------------
+paper, ink, accent, grey = "#fcfcfa", "#22262b", "#3a5a7a", "#8a8f96"
+colors = {
+    "model":    "#2a6f68",  # teal
+    "symbolic": "#b45f06",  # amber
+    "qft":      "#6b4c7a",  # muted purple
+    "analysis": "#9e4a4a",  # muted red
+    "roadmap":  accent,     # slate
+}
+plt.rcParams.update({
+    "font.family": "serif",
+    "font.size": 10,
+    "axes.edgecolor": ink,
+    "axes.linewidth": 0.8,
+    "figure.facecolor": paper,
+    "axes.facecolor": paper,
+    "savefig.facecolor": paper,
+})
+
+# --- Datos --------------------------------------------------------------------
+llm_events = [
+    (datetime(2020, 6, 11),  "GPT-3"),
+    (datetime(2022, 11, 30), "ChatGPT"),
+    (datetime(2023, 3, 14),  "GPT-4"),
+    (datetime(2023, 7, 19),  "Llama 2"),
+    (datetime(2024, 3, 14),  "Claude 3"),
+    (datetime(2024, 12, 6),  "Gemini 2 / o1"),
+    (datetime(2025, 9, 17),  ""),  # etiqueta manual más abajo
+]
+phys_events = [
+    (datetime(2025, 1, 9),  "Barman (LPMs)",          "roadmap"),
+    (datetime(2025, 2, 7),  "v. Hippel (IBP)",        "symbolic"),
+    (datetime(2026, 3, 30), "Albert",                 "model"),
+    (datetime(2026, 4, 1),  "Yu (QFT/strings)",       "qft"),
+    (datetime(2026, 4, 20), "Woodward (QFT)",         "qft"),
+    (datetime(2026, 5, 6),  "Hell & Thiele\n(LLM+CAS)", "symbolic"),
+    (datetime(2026, 6, 9),  "DarkAgents",             "model"),
+    (datetime(2026, 6, 11), "AgentRivet",             "analysis"),
+    (datetime(2026, 6, 17), "Bom (DE)",               "model"),
+    (datetime(2026, 6, 19), "bsm_agent",              "model"),
+]
+events_2025 = [e for e in phys_events if e[0].year == 2025]
+events_2026 = [e for e in phys_events if e[0].year == 2026]
+
+# --- Figura: eje quiebrado en el panel inferior -------------------------------
+fig = plt.figure(figsize=(7.2, 5.4))
+gs = fig.add_gridspec(2, 2, height_ratios=[0.7, 1.3], width_ratios=[0.30, 0.70])
+
+# Panel superior: hitos de LLMs
+ax_top = fig.add_subplot(gs[0, :])
+ax_top.axhline(0, color=grey, lw=0.8, alpha=0.5, zorder=1)
+for i, (date, label) in enumerate(llm_events):
+    ax_top.vlines(date, -0.08, 0.08, color=grey, lw=1.2, zorder=2)
+    ax_top.plot(date, 0.08, "o", color=ink, markersize=4, zorder=3)
+    if i % 2 == 0:
+        ax_top.text(date, 0.12, label, rotation=25, ha="left", va="bottom",
+                    fontsize=8.5, color=ink, zorder=3)
+    else:
+        ax_top.text(date, -0.12, label, rotation=25, ha="left", va="top",
+                    fontsize=8.5, color=ink, zorder=3)
+# Etiqueta del último hito arriba, alineada a la derecha para no salirse
+ax_top.text(datetime(2025, 9, 17), 0.12, "Modelos de\nrazonamiento",
+            rotation=0, ha="right", va="bottom", fontsize=8.5, color=ink, zorder=3)
+ax_top.text(datetime(2019, 9, 1), 0, "LLMs", ha="right", va="center",
+            fontsize=10, color=ink, weight="bold")
+ax_top.set_ylim(-0.38, 0.38)
+ax_top.set_yticks([])
+ax_top.xaxis.set_major_locator(mdates.YearLocator())
+ax_top.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+ax_top.xaxis.set_minor_locator(mdates.MonthLocator(interval=6))
+plt.setp(ax_top.get_xticklabels(), rotation=0, ha="center", fontsize=9)
+ax_top.tick_params(axis="x", colors=ink, length=4)
+for s in ["left", "right", "top"]:
+    ax_top.spines[s].set_visible(False)
+ax_top.spines["bottom"].set_color(ink)
+ax_top.set_xlim(datetime(2019, 8, 1), datetime(2026, 9, 1))
+
+# Panel inferior izquierdo: 2025
+ax_l = fig.add_subplot(gs[1, 0])
+ax_l.axhline(0, color=accent, lw=0.8, alpha=0.5, zorder=1)
+ax_l.axvspan(datetime(2025, 1, 1), datetime(2025, 3, 1),
+             color=accent, alpha=0.06, zorder=0)
+for i, (date, label, cat) in enumerate(events_2025):
+    c = colors[cat]
+    side = 1 if i % 2 == 0 else -1
+    y_dot = side * 0.15
+    y_text = side * 0.23
+    ax_l.vlines(date, 0, y_dot, color=c, lw=1.2, zorder=2)
+    ax_l.plot(date, y_dot, "o", color=c, markersize=4, zorder=3)
+    va = "bottom" if side == 1 else "top"
+    ax_l.text(date + timedelta(days=3), y_text, label, rotation=0, ha="left", va=va,
+              fontsize=7.5, color=c, zorder=3)
+ax_l.set_ylim(-0.30, 0.30)
+ax_l.set_yticks([])
+ax_l.xaxis.set_major_locator(mdates.MonthLocator())
+ax_l.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+plt.setp(ax_l.get_xticklabels(), rotation=0, ha="center", fontsize=8)
+ax_l.tick_params(axis="x", colors=ink, length=3)
+ax_l.set_xlim(datetime(2024, 11, 1), datetime(2025, 4, 1))
+for s in ["left", "right", "top"]:
+    ax_l.spines[s].set_visible(False)
+ax_l.spines["bottom"].set_color(ink)
+
+# Panel inferior derecho: 2026 ampliado (con etiquetas)
+ax_r = fig.add_subplot(gs[1, 1])
+ax_r.axhline(0, color=accent, lw=0.8, alpha=0.5, zorder=1)
+ax_r.axvspan(datetime(2026, 3, 15), datetime(2026, 6, 30),
+             color=accent, alpha=0.06, zorder=0)
+zoom_levels = [
+    (0.20,  1,  0),  # Albert
+    (0.20, -1,  0),  # Yu
+    (0.38,  1,  0),  # Woodward
+    (0.38, -1,  0),  # Hell
+    (0.56,  1,  8),  # DarkAgents
+    (0.56, -1, -8),  # AgentRivet
+    (0.74,  1, -8),  # Bom
+    (0.74, -1,  8),  # bsm_agent
+]
+for (date, label, cat), (lvl, side, xoff) in zip(events_2026, zoom_levels):
+    c = colors[cat]
+    y_dot = side * lvl
+    y_text = side * (lvl + 0.08)
+    x_text = date + timedelta(days=xoff)
+    ax_r.vlines(date, 0, y_dot, color=c, lw=1.2, zorder=2)
+    ax_r.plot(date, y_dot, "o", color=c, markersize=3.5, zorder=3)
+    va = "bottom" if side == 1 else "top"
+    ha = "left" if xoff >= 0 else "right"
+    ax_r.text(x_text, y_text, label, rotation=0, ha=ha, va=va,
+              fontsize=7.0, color=c, zorder=3)
+ax_r.set_ylim(-0.95, 0.95)
+ax_r.set_yticks([])
+ax_r.xaxis.set_major_locator(mdates.MonthLocator())
+ax_r.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+plt.setp(ax_r.get_xticklabels(), rotation=0, ha="center", fontsize=8)
+ax_r.tick_params(axis="x", colors=ink, length=3)
+ax_r.set_xlim(datetime(2026, 3, 10), datetime(2026, 8, 5))
+for s in ["left", "right", "top"]:
+    ax_r.spines[s].set_visible(False)
+ax_r.spines["bottom"].set_color(ink)
+
+# Marcas de quiebre en la unión de los dos ejes inferiores
+kw = dict(transform=ax_l.transAxes, color=ink, clip_on=False, lw=0.8)
+ax_l.plot((0.96, 0.99), (-0.018, 0.012), **kw)
+ax_l.plot((0.96, 0.99), (0.012, -0.018), **kw)
+kw = dict(transform=ax_r.transAxes, color=ink, clip_on=False, lw=0.8)
+ax_r.plot((0.01, 0.04), (-0.018, 0.012), **kw)
+ax_r.plot((0.01, 0.04), (0.012, -0.018), **kw)
+
+# Etiqueta del eje inferior
+fig.text(0.02, 0.30, "Física teórica", ha="left", va="center",
+         fontsize=10, color=accent, weight="bold", rotation=90)
+
+# Leyenda de categorías (a nivel de figura, centrada entre paneles inferiores)
+from matplotlib.lines import Line2D
+legend_elements = [
+    Line2D([0], [0], marker="o", color="w", markerfacecolor=colors["model"],
+           markersize=6, label="Model building"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor=colors["symbolic"],
+           markersize=6, label="Simbólico/ CAS"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor=colors["qft"],
+           markersize=6, label="QFT"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor=colors["analysis"],
+           markersize=6, label="Análisis experimental"),
+    Line2D([0], [0], marker="o", color="w", markerfacecolor=colors["roadmap"],
+           markersize=6, label="Roadmap"),
+]
+ax_top.legend(handles=legend_elements, loc="lower left", fontsize=6.8,
+            frameon=True, facecolor=paper, edgecolor=grey,
+            ncol=5, bbox_to_anchor=(0.0, -0.31))
+
+fig.tight_layout(rect=[0.04, 0, 1, 1])
+plt.show()
+```
+
+### Construcción de modelos y pipelines fenomenológicos
+
+**`bsm_agent`** [@Saad:2026] es quizá el ejemplo más limpio del patrón que
+describo arriba. El usuario especifica, en lenguaje natural, los números
+cuánticos de nuevas partículas escalares o fermiónicas. Un LLM interpreta esa
+especificación, resuelve ambigüedades mediante pasos de confirmación, y
+dispara un *backend* simbólico determinista —escrito en Python, sin
+participación del LLM— que construye el Lagrangiano renormalizable, verifica
+anomalías de *gauge*, expande operadores en campos componentes, deriva las
+condiciones estacionarias de rompimiento electrodébil y calcula matrices de
+masa a nivel árbol. El LLM es el *orquestador*; la física correcta la
+garantiza el código simbólico.[^bsm]
+
+[^bsm]: [github.com/saad-hep/bsm_agent](https://github.com/saad-hep/bsm_agent).
+
+**DarkAgents** [@Lucente:2026] aplica un esquema similar de múltiples agentes
+al dominio de física de astropartículas. El sistema construye pipelines
+completos: parte de un modelo con invariancia de escala clásica, calcula
+transiciones de fase de primer orden cosmológicas, y ajusta el espectro de
+ondas gravitacionales resultante a los datos de NANOGrav. Lo distintivo es que
+DarkAgents produce además un *reporte de auditoría* de los supuestos y
+*priors* que entran en cada etapa —una capa de transparencia que el cálculo
+hecho puramente a mano rara vez documenta con ese nivel de sistematicidad—.
+En sus pruebas, el sistema identificó inconsistencias en ajustes publicados
+previamente y produjo ajustes nuevos usando plantillas de ondas gravitacionales
+por flujo disipativo. El código está disponible públicamente.[^1]
+
+[^1]: [github.com/PhysicsZandi/DarkAgents](https://github.com/PhysicsZandi/DarkAgents).
+
+### LLM + sistema de álgebra computacional
+
+Uno de los resultados más concretos y menos espectaculares —en el buen
+sentido— es el de **Hell y Thiele** [@Hell:2026]. Acoplan Claude (un LLM
+comercial de frontera) con Maple (un sistema de álgebra computacional) y
+evalúan si el sistema resuelve tareas algorítmicas de física teórica:
+perturbaciones cosmológicas en teorías modificadas de gravedad. El LLM recibe
+ejemplos resueltos como contexto (*in-context learning*) y luego se le pide
+resolver problemas análogos usando Maple como *runtime*. El hallazgo es
+mesurado pero significativo: con suficientes ejemplos trabajados, el sistema
+resuelve la mayoría de los problemas de prueba. Los errores típicos no son de
+cálculo (eso lo garantiza Maple) sino de *formulación*: interpretar mal una
+convención, aplicar una plantilla donde no corresponde.
+
+El patrón es el mismo: el LLM no deriva; el LLM traduce la intención al
+lenguaje de la herramienta que sí deriva.
+
+### Reducción de integrales de Feynman
+
+La reducción por integración por partes (IBP) de integrales de Feynman es uno
+de los cuellos de botella computacionales más conocidos en física teórica de
+altas energías y en física de ondas gravitacionales. La eficiencia de la
+reducción depende críticamente de heurísticas para seleccionar qué identidades
+de IBP usar primero —un problema de optimización combinatoria que
+tradicionalmente se resuelve con criterios artesanales—.
+
+**von Hippel y Wilhelm** [@vonHippel:2025] atacaron este problema usando
+`funsearch`, una variante de programación genética que genera código mediante
+un LLM. El sistema explora el espacio de heurísticas posibles, evalúa cada una
+contra *benchmarks* de reducción, y evoluciona las mejores. Los autores
+reportan que el método redescubrió las heurísticas de vanguardia incorporadas
+recientemente en solvers de IBP *y en un caso encontró una pequeña mejora
+sobre el estado del arte*. De nuevo: el LLM no deriva integrales; genera
+candidatos de heurística que un solucionador determinista evalúa.
+
+### Exploración autónoma de espacios de teorías
+
+**Albert** [@Alexander:2026] merece una mención aparte, aunque su arquitectura
+se distancia del patrón "LLM como puente a herramientas". Es un marco
+neuro-simbólico que codifica la física de partículas como un lenguaje formal
+—simetrías, partículas, interacciones— con una gramática basada en reglas.
+Esto elimina las alucinaciones: el modelo genera secuencias tokenizadas que
+son sintácticamente válidas por construcción. Un entorno de aprendizaje por
+refuerzo impone restricciones teóricas de primeros principios, calcula
+observables con correcciones radiativas y evalúa la verosimilitud estadística
+($\chi^2$) contra datos experimentales. Entrenado únicamente con datos del LEP
+—que no contienen evidencia directa del quark top—, Albert redescubrió el
+Modelo Estándar e infirió autónomamente la necesidad y propiedades del quark
+top, prediciendo su masa en $178.9 \pm 5.0\ \text{GeV}$, consistente con la
+medición moderna del LHC.
+
+Este trabajo es relevante no porque use un LLM —no lo usa en el sentido
+convencional; es un transformer entrenado para una tarea específica— sino
+porque demuestra que el espacio de teorías BSM, cuya explosión combinatoria es
+el argumento estándar contra la exploración sistemática, puede navegarse con
+arquitecturas modernas siempre que las restricciones físicas se impongan como
+parte del entorno, no como parte del modelo generativo.
+
+### De *papers* a código de análisis
+
+Uno de los problemas crónicos de la fenomenología de colisionadores es la
+brecha entre lo que un *paper* del ATLAS o CMS reporta y el código que permite
+comparar un modelo nuevo contra esa medición. El sistema **Rivet** preserva
+análisis experimentales como rutinas de C++ que cualquier generador de Monte
+Carlo puede invocar, pero la cobertura es incompleta: solo el 39% de las
+mediciones tiene una rutina pública documentada.
+
+**AgentRivet** [@Costa:2026] usa un flujo multi-etapa con LLMs comerciales
+(OpenAI, Anthropic, Google) para extraer la información del análisis de un
+*paper* publicado y escribir la rutina de Rivet faltante, con revisiones
+intermedias de código y física como control de calidad autónomo. Los
+resultados son alentadores pero con matices importantes: las rutinas compilan
+con pocos errores de sintaxis y la fidelidad física es razonable, pero la
+mayoría de los errores de implementación provienen de ambigüedades sutiles en
+la propia publicación —no de fallos del LLM—. Es decir, el sistema es tan
+bueno como la claridad del *paper* que procesa.
+
+### Modelos de lenguaje afinados para QFT
+
+En un espíritu más exploratorio, **Woodward et al.**
+[@Woodward:2026] realizaron el primer estudio académico de *fine-tuning* de
+modelos pequeños de razonamiento (7B parámetros) específicamente para teoría
+cuántica de campos. Generaron más de 2500 problemas sintéticos y curaron
+problemas de autoría humana desde arXiv y recursos pedagógicos estándar.
+Entrenaron con RL y SFT, y liberan los datos, el pipeline y ~200M tokens de
+trazas de razonamiento. El trabajo es valioso sobre todo por lo que muestra
+del proceso: los errores de razonamiento no desaparecen con el ajuste fino,
+cambian de carácter, y la generalización a otros dominios de la física es
+limitada.
+
+Dos trabajos complementarios de *benchmarking* ayudan a calibrar expectativas.
+**Yu et al.** [@Yu:2026] construyeron un conjunto pequeño de preguntas
+curadas por expertos en QFT y teoría de cuerdas y encontraron que los LLMs
+actuales bordean el techo en derivaciones explícitas dentro de marcos
+conceptuales estables, pero se degradan sistemáticamente cuando la tarea
+requiere reconstruir pasos omitidos o reorganizar representaciones bajo
+restricciones globales de consistencia.
+
+### La hoja de ruta: Large Physics Models
+
+Cierro con un artículo que no reporta un sistema concreto sino que articula
+una visión. **Barman et al.** [@Barman:2025] —un grupo grande con autores de
+física de partículas, ciencia de la computación y filosofía de la ciencia—
+propusieron el concepto de *Large Physics Models* (LPMs): modelos fundacionales
+específicos para física, integrados con módulos de razonamiento simbólico,
+análisis de datos experimentales y sintesis de literatura. El artículo,
+publicado en *European Physical Journal C*, organiza la discusión en tres
+pilares —Desarrollo, Evaluación y Reflexión Filosófica— y propone una
+estructura de colaboración interdisciplinaria inspirada en las colaboraciones
+experimentales de física de partículas.
+
+## Qué significa todo esto
+
+El hilo conductor de los trabajos anteriores no es "los LLMs resuelven física
+teórica". Es más específico y, creo, más interesante: **los LLMs están
+convirtiendo herramientas que ya existían pero eran difíciles de usar en
+herramientas accesibles mediante lenguaje natural**. El patrón se repite:
+
+- `bsm_agent`: lenguaje natural $\to$ backend simbólico.
+- DarkAgents: lenguaje natural $\to$ pipeline de cómputo + auditoría.
+- Hell & Thiele: lenguaje natural + ejemplos $\to$ código de Maple.
+- `funsearch` + IBP: lenguaje natural (vía generación de código) $\to$ heurísticas evaluadas por solver.
+- AgentRivet: *paper* publicado $\to$ rutina de Rivet.
+
+En todos los casos, la física correcta la garantiza una capa determinista
+externa al LLM. El LLM resuelve el problema de *interfaz*.
+
+Esto tiene implicaciones prácticas. La comunidad no necesita, por ahora, un
+modelo que derive solo —probablemente no sería confiable aunque existiera—.
+Necesita **inversión en documentación, APIs y *wrappers* que hagan que las
+herramientas existentes sean accesibles a un LLM**, porque el LLM ya sabe —en
+el sentido estadístico— cómo usarlas. Un `SARAH` con una API bien diseñada y
+documentación *machine-readable* sería inmediatamente más útil, vía LLM, que
+un `SARAH` sin nada de eso pero acoplado a un modelo generativo más grande. Ya que la
+la física teórica va evolucionando, nuevas herramientas, métodos o teorías surgirán y la  generación de la capa determinista para cada una de ellas, externa al LLM y que garantice la física correcta, será la parte más importante para que la comunidad pueda aprovechar los LLMs y la que contenga la física.
+
+Esto tiene implicaciones prácticas. La comunidad no necesita, por ahora, un modelo que derive de manera autónoma —probablemente no sería confiable aunque existiera—. Lo que se requiere es inversión en documentación, APIs y *wrappers* que hagan accesibles las herramientas existentes a un LLM, ya que el LLM sabe —en el sentido estadístico— cómo utilizarlas. Un `SARAH` con una API bien diseñada y documentación *legible para la maquina* sería inmediatamente más útil, vía LLM, que un `SARAH` sin esos recursos pero acoplado a un modelo generativo más grande. 
+
+A medida que la física teórica evolucione y surjan nuevas herramientas, métodos o teorías, la construcción de una capa determinista externa al LLM —que garantice la corrección física— será la parte más importante para que la comunidad pueda aprovechar los LLMs de manera confiable.
+
+
+## Lo que falta
+
+Termino con tres direcciones que este recorrido deja abiertas y que
+probablemente merezcan entradas propias en esta bitácora:
+
+1. **Un estudio de caso concreto.** Tomar uno de los patrones anteriores y
+   ejecutarlo de extremo a extremo en un modelo BSM real (con los detalles no
+   publicados reservados), midiendo tiempo ahorrado y errores encontrados.
+2. **Comparación operativa entre modelos.** Todos los trabajos citados usan
+   "el LLM" como una caja negra intercambiable. La realidad es que modelos
+   distintos fallan de modos distintos, y caracterizar eso para tareas de
+   física teórica es una contribución pendiente.
+3. **El problema de la verificación.** Casi todos los sistemas descritos
+   delegan la corrección a una capa determinista. Pero ¿qué pasa cuando la
+   capa determinista no existe o es ella misma difícil de verificar? Ése es el
+   caso de uso más duro, y apenas empieza a explorarse.
+
+## Referencias
+
+::: {#refs}
+:::
+
