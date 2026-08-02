@@ -35,7 +35,10 @@ El problema, en mi experiencia, es triple:
 1. **Documentación escasa u opaca.** Manuales que asumen que el usuario ya
    conoce la arquitectura interna del paquete; tutoriales que se rompen con la
    primera actualización; ejemplos que cubren el caso trivial pero no el que
-   uno necesita
+   uno necesita. La mala documentación es superable para quien lee código fuente
+   y depura paquetes simbólicos con soltura, pero la mayoría de los doctorados
+   en teoría no reciben ese entrenamiento: lo que un research-software engineer
+   resolvería en minutos se convierte en un muro para un físico.
 2. **Curvas de aprendizaje empinadas.** Instalar, configurar y producir un
    primer resultado útil con `SARAH` o `FeynRules` puede tomar días. Cada
    herramienta tiene su propio lenguaje de entrada, sus propias convenciones,
@@ -43,6 +46,16 @@ El problema, en mi experiencia, es triple:
 3. **Falta de puentes entre herramientas.** El resultado de una se convierte
    manualmente en la entrada de otra, en formatos incompatibles, mediante
    scripts ad-hoc que cada grupo mantiene por separado.
+
+Incluso cuando una herramienta funciona, su resultado llega como caja negra —un
+Lagrangiano o un conjunto de reglas de Feynman producido por un pipeline
+interno opaco—. Para usar ese resultado en un cálculo a lazos, un teórico
+necesita creerlo hasta en las convenciones de signos. La única forma de
+conseguir esa confianza es derivarlo independientemente, lo cual borra buena
+parte del tiempo que la herramienta debía ahorrar. La derivación a mano no es
+solo pedagógica: es un paso de verificación que las herramientas automatizadas
+no reemplazan, solo reubican —ahora hay que verificar la salida de la
+herramienta contra la derivación propia de todas formas—.
 
 El costo de *aprender la herramienta* frecuentemente supera el costo de
 *hacer la cuenta a mano* (lo que se encuentra mayormente claro en la literatura y el oficio).
@@ -422,18 +435,28 @@ En todos los casos, la física correcta la garantiza una capa determinista
 externa al LLM. El LLM resuelve el problema de *interfaz*.
 
 Esto tiene implicaciones prácticas. La comunidad no necesita, por ahora, un
-modelo que derive solo —probablemente no sería confiable aunque existiera—.
-Necesita **inversión en documentación, APIs y *wrappers* que hagan que las
-herramientas existentes sean accesibles a un LLM**, porque el LLM ya sabe —en
-el sentido estadístico— cómo usarlas. Un `SARAH` con una API bien diseñada y
-documentación *machine-readable* sería inmediatamente más útil, vía LLM, que
-un `SARAH` sin nada de eso pero acoplado a un modelo generativo más grande. Ya que la
-la física teórica va evolucionando, nuevas herramientas, métodos o teorías surgirán y la  generación de la capa determinista para cada una de ellas, externa al LLM y que garantice la física correcta, será la parte más importante para que la comunidad pueda aprovechar los LLMs y la que contenga la física.
+modelo que derive de manera autónoma —probablemente no sería confiable aunque
+existiera—. Lo que se requiere es inversión en documentación, APIs y *wrappers*
+que hagan accesibles las herramientas existentes a un LLM, porque el LLM ya
+sabe —en el sentido estadístico— cómo utilizarlas. Un `SARAH` con una API bien
+diseñada y documentación *legible para la máquina* sería inmediatamente más
+útil, vía LLM, que un `SARAH` sin esos recursos pero acoplado a un modelo
+generativo más grande. A medida que la física teórica evolucione y surjan
+nuevas herramientas, métodos o teorías, la construcción de una capa
+determinista externa al LLM —que garantice la corrección física— será la parte
+más importante para que la comunidad pueda aprovechar los LLMs de manera
+confiable.
 
-Esto tiene implicaciones prácticas. La comunidad no necesita, por ahora, un modelo que derive de manera autónoma —probablemente no sería confiable aunque existiera—. Lo que se requiere es inversión en documentación, APIs y *wrappers* que hagan accesibles las herramientas existentes a un LLM, ya que el LLM sabe —en el sentido estadístico— cómo utilizarlas. Un `SARAH` con una API bien diseñada y documentación *legible para la maquina* sería inmediatamente más útil, vía LLM, que un `SARAH` sin esos recursos pero acoplado a un modelo generativo más grande. 
-
-A medida que la física teórica evolucione y surjan nuevas herramientas, métodos o teorías, la construcción de una capa determinista externa al LLM —que garantice la corrección física— será la parte más importante para que la comunidad pueda aprovechar los LLMs de manera confiable.
-
+Pero bajar la barrera técnica no basta si los físicos no pueden cruzar la que
+ya está baja. En la medida en que los LLMs convierten el lenguaje natural en
+invocaciones de herramientas, el siguiente cuello de botella no es la interfaz
+— es la capacidad del usuario para leer, auditar y corregir lo que el modelo
+produce. La formación en física teórica debería incluir, en el futuro cercano,
+habilidades básicas de software: lectura de código fuente, control de
+versiones, depuración de paquetes simbólicos. No para convertir a los físicos
+en programadores, sino para que la verificación —que sigue siendo el paso
+central del oficio— no dependa de habilidades que el plan de estudios actual
+no cubre.
 
 ## Lo que falta
 
