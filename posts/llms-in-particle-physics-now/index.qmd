@@ -36,10 +36,7 @@ The problem, in my experience, is threefold:
 1. **Scarce or opaque documentation.** Manuals that assume the user already
    knows the package's internal architecture; tutorials that break at the
    first update; examples that cover the trivial case but not the one you
-   need. Bad documentation is survivable for someone who reads source code and
-   debugs symbolic packages with ease, but most theory PhDs are not trained
-   that way: what a research-software engineer would fix in minutes becomes a
-   wall for a physicist.
+   need.
 2. **Steep learning curves.** Installing, configuring, and producing a first
    useful result with `SARAH` or `FeynRules` can take days. Each tool has its
    own input language, its own conventions, its own cryptic error messages.
@@ -434,10 +431,7 @@ that make existing tools accessible to an LLM**, because the LLM already knows
 — in the statistical sense — how to use them. A `SARAH` with a well-designed
 API and machine-readable documentation would be immediately more useful, via
 LLM, than a `SARAH` without any of that but coupled to a larger generative
-model. As theoretical physics evolves and new tools, methods, or theories
-emerge, building a deterministic layer external to the LLM — one that
-guarantees physical correctness — will be the most important part for the
-community to reliably harness LLMs.
+model.
 
 But lowering the technical barrier is not enough if physicists cannot cross the
 one that is already low. To the extent that LLMs turn natural language into
@@ -446,8 +440,13 @@ ability to read, audit, and correct what the model produces.
 Theoretical-physics training should include, in the near future, basic software
 skills: reading source code, version control, debugging symbolic packages. Not
 to turn physicists into programmers, but so that verification — which remains
-the central step of the craft — does not depend on a skill set the current
-curriculum does not cover.
+the central step of the craft — does not depend on a skill set that most theory
+PhDs do not receive today.
+
+As theoretical physics evolves and new tools, methods, or theories emerge,
+building a deterministic layer external to the LLM — one that guarantees the
+correct application of the physics — will be the most important part for the
+community to reliably harness LLMs.
 
 ## What is missing
 
