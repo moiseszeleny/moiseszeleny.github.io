@@ -35,10 +35,7 @@ El problema, en mi experiencia, es triple:
 1. **Documentación escasa u opaca.** Manuales que asumen que el usuario ya
    conoce la arquitectura interna del paquete; tutoriales que se rompen con la
    primera actualización; ejemplos que cubren el caso trivial pero no el que
-   uno necesita. La mala documentación es superable para quien lee código fuente
-   y depura paquetes simbólicos con soltura, pero la mayoría de los doctorados
-   en teoría no reciben ese entrenamiento: lo que un research-software engineer
-   resolvería en minutos se convierte en un muro para un físico.
+   uno necesita.
 2. **Curvas de aprendizaje empinadas.** Instalar, configurar y producir un
    primer resultado útil con `SARAH` o `FeynRules` puede tomar días. Cada
    herramienta tiene su propio lenguaje de entrada, sus propias convenciones,
@@ -441,22 +438,23 @@ que hagan accesibles las herramientas existentes a un LLM, porque el LLM ya
 sabe —en el sentido estadístico— cómo utilizarlas. Un `SARAH` con una API bien
 diseñada y documentación *legible para la máquina* sería inmediatamente más
 útil, vía LLM, que un `SARAH` sin esos recursos pero acoplado a un modelo
-generativo más grande. A medida que la física teórica evolucione y surjan
-nuevas herramientas, métodos o teorías, la construcción de una capa
-determinista externa al LLM —que garantice la corrección física— será la parte
-más importante para que la comunidad pueda aprovechar los LLMs de manera
-confiable.
+generativo más grande. 
 
 Pero bajar la barrera técnica no basta si los físicos no pueden cruzar la que
 ya está baja. En la medida en que los LLMs convierten el lenguaje natural en
 invocaciones de herramientas, el siguiente cuello de botella no es la interfaz
 — es la capacidad del usuario para leer, auditar y corregir lo que el modelo
-produce. La formación en física teórica debería incluir, en el futuro cercano,
+produce. La formación en física teórica deberá incluir, en el futuro cercano,
 habilidades básicas de software: lectura de código fuente, control de
 versiones, depuración de paquetes simbólicos. No para convertir a los físicos
 en programadores, sino para que la verificación —que sigue siendo el paso
-central del oficio— no dependa de habilidades que el plan de estudios actual
-no cubre.
+central del oficio— no dependa de habilidades que la mayoría de los doctorados en teoría no reciben hoy.
+
+A medida que la física teórica evolucione y surjan
+nuevas herramientas, métodos o teorías, la construcción de una capa
+determinista externa al LLM —que garantice la correcta aplicación de la física— será la parte
+más importante para que la comunidad pueda aprovechar los LLMs de manera
+confiable.
 
 ## Lo que falta
 
