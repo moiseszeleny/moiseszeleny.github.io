@@ -75,9 +75,9 @@ The computation of the scalar masses from $V$ follows a standard four-step chain
 
 1. **Expansion around the vacuum.** Each scalar is written as its VEV plus a fluctuation, for example
 $$
-\phi_i^0(x) = \frac{1}{\sqrt{2}}\big(v_i + \eta_i(x) + i\,\xi_i(x)\big),
+\phi_i^0(x) = \frac{1}{\sqrt{2}}\big(v_i + \eta_i(x) + i\,\xi_i(x)\big).
 $$
-and analogously for the charged components $\phi_i^\pm$, $\chi_{L,R}^\pm$. The potential is then expanded to quadratic order in the fluctuations; the bilinear part defines the mass spectrum.
+The potential is then expanded to quadratic order in the fluctuations; the bilinear part defines the mass spectrum.
 
 2. **Tadpole conditions (stationarity).** The VEVs $\{k_1, k_2, v_L, v_R\}$ are fixed by requiring the vacuum to be an extremum:
 $$
@@ -426,9 +426,9 @@ This pattern scales in several directions. Today SymPy covers the polynomial alg
 
 The deepest change is cultural. In the near future, a PhD student in theoretical physics will likely spend less time rewriting matrix products by hand and more time on:
 
-1. Formulating the **potential** and the **verification protocol**.
+1. Formulating the **model** and the **verification protocol**.
 2. Asking an LLM to generate the CAS code.
-3. Running the code, checking the `assert`s, and analyzing the limiting cases.
+3. Running the code, checking the `assert`, and analyzing the limiting cases.
 4. Deciding whether the result makes physical sense.
 
 The derivation does not disappear; it becomes code. And code, unlike a chat answer, can be **run, audited, and fixed**.

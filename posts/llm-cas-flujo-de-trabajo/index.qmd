@@ -427,7 +427,7 @@ Este patrón escala de varias formas. Hoy SymPy cubre el álgebra polinomial del
 
 El cambio más profundo es cultural. En el futuro próximo, un estudiante de doctorado en física teórica probablemente dedique menos tiempo a reescribir a mano productos de matrices y más tiempo a:
 
-1. Formular el **potencial** y el **protocolo de verificación**.
+1. Formular el **modelo** y el **protocolo de verificación**.
 2. Pedirle a un LLM que genere el código CAS.
 3. Ejecutar el código, revisar los `assert` y analizar los casos límite.
 4. Decidir si el resultado tiene sentido físico.
@@ -442,7 +442,7 @@ También hay limitaciones prácticas:
 
 - **Contexto y longitud:** para potenciales con decenas de parámetros, el prompt puede volverse engorroso.
 - **Rendimiento de SymPy:** integrales de lazo reales o matrices muy grandes escapan fácilmente de lo que SymPy puede hacer en tiempo razonable.
-- **Convenciones:** el LLM puede mezclar convenciones de signo o cargas. El arnés de verificación debe incluir al menos una comprobación de invariancia gauge o de un límite conocido.
+- **Convenciones:** el LLM puede mezclar convenciones de signo for $\tilde\Phi$, $\tau$ o cargas. El arnés de verificación debe incluir al menos una comprobación de invariancia gauge o de un límite conocido.
 
 El punto no es que el LLM+CAS lo haga todo. El punto es que **convierte la incertidumbre del modelo en una excepción del CAS**, que es mucho más fácil de diagnosticar que una respuesta plausiblemente incorrecta.
 
