@@ -6,6 +6,9 @@
 # Claude Code local settings (not part of the site)
 .claude/
 
+# Local drafts / working notes (not part of the site)
+/_drafts/
+
 # Editor / OS cruft
 *.swp
 Thumbs.db
