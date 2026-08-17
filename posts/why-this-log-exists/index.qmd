@@ -7,17 +7,8 @@ categories: [English, meta, workflow]
 lang: en
 ---
 
-::: {.abstract-alt}
-[Resumen (Español)]{.abstract-label}
-
-Inicio esta bitácora para documentar, de forma honesta y reproducible, cómo uso
-modelos de lenguaje (LLMs) en mi investigación en física teórica de partículas,
-concretamente en fenomenología más allá del Modelo Estándar (BSM). Cada entrada
-describirá una tarea real: la herramienta y el modelo usados, el flujo de
-trabajo, qué funcionó, qué falló, el tiempo ahorrado y —cuando sea posible— un
-enlace al código o cuaderno para reproducirlo. Sin exageraciones: derivaciones
-reales y fracasos honestos. Los detalles ligados a resultados aún no publicados
-se reservarán hasta que aparezca el *preprint* correspondiente.
+::: {.callout-note appearance="simple"}
+**Versión en español disponible.** Este artículo también está disponible [en español](/posts/por-que-existe-esta-bitacora/).
 :::
 
 ## Why I'm starting this log

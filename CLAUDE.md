@@ -51,9 +51,15 @@ code cell (e.g. a `{python}` block) must therefore ship **pre-computed, frozen o
 
 - **Posts** live in `posts/<slug>/index.qmd`. Shared post defaults are in
   `posts/_metadata.yml` (freeze, reading-time, no title banner, per-post TOC).
-- **Bilingual rule:** one primary language per post, with a short abstract in the other
-  language at the top wrapped in a `::: {.abstract-alt}` div (styled in `theme.scss`).
-  `posts/why-this-log-exists/index.qmd` is the reference example.
+- **Bilingual rule:** each post exists as **two complete versions**, one in English
+  and one in Spanish, each in its own folder with a translated slug (e.g.
+  `posts/llm-cas-workflow/` ↔ `posts/llm-cas-flujo-de-trabajo/`). Each version opens
+  with a one-line cross-link `::: {.callout-note appearance="simple"}` pointing to
+  its sibling — see the `posts/llms-in-particle-physics-now/` /
+  `posts/llms-en-fisica-de-particulas/` pair as the reference template. A post may
+  optionally include a same-language abstract in a `::: {.post-abstract}` div
+  (styled in `theme.scss`) placed after the cross-link callout. Do **not** use the
+  retired `::: {.abstract-alt}` div (its CSS has been removed from `theme.scss`).
 - **Language badge:** the post's language is its **first `categories:` entry** — literally
   `English` or `Español` — followed by topic tags. The listing (`index.qmd`) shows these as
   pills; `_includes/language-badges.html` (a JS `include-after-body`) tags the

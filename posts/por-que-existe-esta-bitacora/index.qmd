@@ -1,0 +1,107 @@
+---
+title: "Por qué existe esta bitácora"
+description: "Inicio de un registro honesto y reproducible de dónde los LLMs ayudan — y dónde no — en investigación BSM/fenomenología."
+author: "Moises Zeleny"
+date: "2026-07-12"
+categories: [Español, meta, flujo-de-trabajo]
+lang: es
+---
+
+::: {.callout-note appearance="simple"}
+**Versión en inglés disponible.** Esta entrada también está disponible [en inglés](/posts/why-this-log-exists/).
+:::
+
+## Por qué inicio esta bitácora
+
+Uso modelos de lenguaje en mi investigación cotidiana, y me he cansado de dos
+narrativas igualmente inútiles: la que dice que los LLMs están a punto de hacer
+física por nosotros, y la que los trata como loros estocásticos inútiles para
+cualquier cosa seria. Ninguna corresponde con lo que realmente experimento en
+el escritorio.
+
+Lo que experimento es más interesante y más mundano: una herramienta
+**genuinamente útil para ciertas subtareas**, poco fiable para otras, y
+ocasionalmente equivocada con seguridad de formas que cuestan tiempo real. La
+única manera de saber cuál es cuál es llevar un registro. Así que esto es ese
+registro — una libreta de laboratorio para un tipo particular de instrumento.
+
+El público que tengo en mente son otros investigadores, particularmente en
+física teórica y de partículas. Si trabajas en **fenomenología BSM** — sectores
+escalar o de gauge extendidos, mecanismos de masa de neutrinos, materia oscura,
+sabor, signaturas en colisionadores — espero que algunas de estas notas te
+ahorren el trabajo de redescubrir los mismos modos de fallo que yo.
+
+## Dónde ayudan los LLMs actualmente (y dónde no)
+
+Esta es una instantánea de mi opinión actual y revisable. Parte del punto de la
+bitácora es hacer estos reclamos responsables con el tiempo.
+
+**Dónde me ayudan hoy:**
+
+- **Código *boilerplate* y de pegamento.** Parsear salida `SLHA`, cablear
+  barridos, reorganizar datos para gráficas, andamiaje de `matplotlib`/`pandas`.
+  Rápido de escribir, rápido de verificar.
+- **Traducir entre herramientas y formalismos.** Bosquejar un fragmento de
+  modelo en `FeynRules` o `SARAH`, convertir un término del Lagrangiano en un
+  vértice aproximado, mover un fragmento entre Mathematica y Python.
+- **Triaje y orientación en la literatura.** Obtener un primer mapa de un
+  rincón desconocido de la literatura, o reformular un resultado recordado a
+  medias en términos buscables — siempre como un *apuntador*, nunca como una
+  cita.
+- **Rubber-ducking de derivaciones.** Recorrer verbalmente una contracción de
+  índices, una reducción de integral de lazo o un argumento de simetría, donde
+  sigo siendo yo quien revisa cada línea.
+
+**Dónde (aún) no ayudan:**
+
+- **Cualquier cosa que requiera una derivación garantidamente correcta.**
+  Signos, factores de 2, convenciones de $\gamma^5$ y sutilezas de
+  $\overline{\text{MS}}$ son justamente donde la salida que suena fluida es
+  más peligrosa.
+- **Valores numéricos y citas.** Razones de ramificación o listas de
+  referencias fabricadas con seguridad siguen siendo un riesgo real.
+- **Construcción de modelos genuinamente novedosa.** Recombinan lo conocido
+  bien; no producen de forma fiable la restricción en la que no había pensado.
+
+Un ejemplo concreto de la trampa: un LLM producirá felizmente una contribución
+a un lazo que *parece* correcta — estructura correcta, prefactor plausible — y
+estará mal por un signo o un $1/(4\pi)^2$. La expresión se compone bonitamente:
+
+$$
+\Delta a_\mu \;\sim\; \frac{m_\mu^2}{16\pi^2 M^2}\, \sum_i c_i\, F(x_i),
+$$
+
+y la única defensa es derivarla uno mismo y tratar la versión del modelo como
+una hipótesis a verificar, no como una respuesta.
+
+## Qué esperar aquí
+
+- **Tareas reales, no demos de juguete.** Cada entrada es algo que realmente
+  necesitaba hacer.
+- **El flujo de trabajo completo**, incluyendo los prompts y los callejones sin
+  salida — no una selección de momentos estelares limpiada.
+- **Reportes honestos de fracasos.** Cuando un modelo pierde una hora, eso
+  también es una entrada; a menudo son las más útiles.
+- **Estimaciones de tiempo ahorrado**, declaradas tan honestamente como pueda,
+  con la salvedad de que el tiempo de verificación es parte del balance.
+- **Notas de reproducibilidad.** Donde puedo, cada entrada enlaza a código o
+  un cuaderno para que puedas ejecutarlo tú mismo. Donde no puedo, diré por qué.
+- **Sin exageraciones.** Si un LLM no ayudó, la entrada lo dirá claramente.
+
+## Una nota sobre resultados no publicados
+
+Parte de este trabajo toca proyectos en curso. **Los detalles ligados a
+resultados no publicados — modelos específicos, puntos de parámetro, hallazgos
+numéricos — se reservarán hasta que el *preprint* correspondiente sea público.**
+En esos casos documentaré el *método y flujo de trabajo* (que es la parte
+transferible) reteniendo el resultado en sí, y actualizaré la entrada con un
+enlace una vez que el preprint salga. El material de reproducibilidad solo
+apuntará a cosas que esté en libertad de compartir.
+
+Esa es la carta de intención. La siguiente entrada será una tarea real.
+
+::: {.callout-note appearance="simple"}
+**Nota de reproducibilidad.** Esta entrada inaugural es una declaración de
+intenciones y no tiene código asociado. Las entradas futuras enlazarán a un
+repositorio o cuaderno aquí.
+:::

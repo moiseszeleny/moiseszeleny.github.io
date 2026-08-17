@@ -1,0 +1,483 @@
+---
+title: "Más allá de la respuesta directa: un flujo de trabajo LLM + CAS para la física teórica"
+description: "Comparar una respuesta directa de un chat con un flujo de trabajo LLM + SymPy en la minimización del potencial escalar de
+modelos más allá del Modelo Estándar."
+author: "Moises Zeleny"
+date: "2026-08-16"
+categories: [Español, flujo-de-trabajo, llms, cas, sympy]
+lang: es
+bibliography: refs.bib
+---
+
+::: {.callout-note appearance="simple"}
+**English version available.** This post is also available [in English](/posts/llm-cas-workflow/).
+:::
+
+::: {.post-abstract}
+[Resumen]{.abstract-label}
+
+Esta entrada prueba un flujo de trabajo concreto para hacer álgebra de física teórica con un modelo de lenguaje (LLM) sin confiar ciegamente en su respuesta: pedirle al LLM que escriba código SymPy, y dejar que el sistema de álgebra computacional (CAS) verifique cada identidad. El caso de prueba es la minimización del potencial escalar del Doublet Left-Right Symmetric Model (DLRSM). Comparo la respuesta directa de un prompt de chat (Gemini 3.1 Pro, 2026-08-02) con el flujo LLM+CAS, y muestro que este último produce una derivación reproducible, verificada con `assert`, cuyas masas físicas coinciden con los resultados publicados.
+:::
+
+## Motivación
+
+En la entrada anterior de esta bitácora [por-que-existe-esta-bitacora](/posts/por-que-existe-esta-bitacora/) advertí que los modelos de lenguaje (LLMs) son particularmente peligrosos cuando producen una derivación que **luce correcta** pero está mal en un factor de $1/(4\pi)^2$, en un signo o en una convención. La única defensa que conozco es hacer el cálculo uno mismo y tratar la respuesta del modelo como una hipótesis a verificar.
+
+El problema es que, para muchos problemas de física teórica, "verificar" a mano consume tanto tiempo como hacer el cálculo original. El flujo de trabajo tradicional es, en la práctica, **oracular**: preguntas al modelo, te da una respuesta, y luego debes confiar o rehacer. Lo que propongo aquí es un flujo de trabajo **constructivo**:
+
+1. No le pidas al LLM la respuesta final.
+2. Pídele que escriba el código (SymPy) que produce la respuesta.
+3. Ejecuta ese código en un sistema de álgebra computacional (CAS).
+4. Verifica explícitamente las identidades que el CAS puede comprobar: condiciones de tadpole, autovalores de Goldstone, masas físicas, coincidencia con ecuaciones publicadas.
+
+El CAS no elimina la responsabilidad del físico; la cambia de lugar: de "hacer el cálculo a mano" a "escribir un arnés de verificación que el CAS evalúa simbólicamente". Este es el mismo espíritu que se ve en trabajos recientes como @Hell:2026, donde los LLMs se usan como traductores de intención a código simbólico, no como oráculos.
+
+## El caso de prueba: minimización del potencial escalar del DLRSM
+
+El modelo es el Doublet Left-Right Symmetric Model (DLRSM), descrito en @ZelenyMora:2026. El sector escalar contiene un bidoblete $\Phi$ y dos dobletes $\chi_L, \chi_R$ con los VEVs
+
+$$
+\langle\Phi\rangle = \mathrm{diag}(k_1, k_2), \qquad
+\langle\chi_L\rangle = \begin{pmatrix}0\\ v_L\end{pmatrix}, \qquad
+\langle\chi_R\rangle = \begin{pmatrix}0\\ v_R\end{pmatrix}.
+$$
+
+El potencial escalar, tomado de @Senjanovic:1979 y usado en @ZelenyMora:2026, es $V = V_\Phi + V_\chi + V_{\Phi\chi}$ con
+
+$$
+\begin{aligned}
+V_\Phi =& -\mu_1^2 \mathrm{Tr}\Phi^\dagger\Phi
++ \lambda_1 \left(\mathrm{Tr}\Phi^\dagger\Phi\right)^2
++ \lambda_2 \mathrm{Tr}\Phi^\dagger\Phi\Phi^\dagger\Phi \\&
++ \frac{\lambda_3}{2}\left(\mathrm{Tr}\Phi^\dagger\tilde\Phi + \mathrm{Tr}\tilde\Phi^\dagger\Phi\right)^2
++ \frac{\lambda_4}{2}\left(\mathrm{Tr}\Phi^\dagger\tilde\Phi - \mathrm{Tr}\tilde\Phi^\dagger\Phi\right)^2 \\&
++ \lambda_5 \mathrm{Tr}\Phi^\dagger\Phi\tilde\Phi^\dagger\tilde\Phi
++ \frac{\lambda_6}{2}\left[\mathrm{Tr}\Phi^\dagger\tilde\Phi\Phi^\dagger\tilde\Phi + \mathrm{h.c.}\right],
+\end{aligned}
+$$
+
+$$
+V_\chi = -\mu_2^2\left(\chi_L^\dagger\chi_L + \chi_R^\dagger\chi_R\right)
++ \rho_1\left[\left(\chi_L^\dagger\chi_L\right)^2 + \left(\chi_R^\dagger\chi_R\right)^2\right]
++ \rho_2\,\chi_L^\dagger\chi_L\,\chi_R^\dagger\chi_R,
+$$
+
+$$
+\begin{aligned}
+V_{\Phi\chi} =& \;\alpha_1\,\mathrm{Tr}\Phi^\dagger\Phi\left(\chi_L^\dagger\chi_L + \chi_R^\dagger\chi_R\right) \\&
++ \alpha_2\left(\chi_L^\dagger\Phi\Phi^\dagger\chi_L + \chi_R^\dagger\Phi^\dagger\Phi\chi_R\right) \\&
++ \alpha_3\left(\chi_L^\dagger\tilde\Phi\tilde\Phi^\dagger\chi_L + \chi_R^\dagger\tilde\Phi^\dagger\tilde\Phi\chi_R\right).
+\end{aligned}
+$$
+
+## Definiciones: del potencial a las masas
+
+El cálculo de las masas de los escalares a partir de $V$ sigue una cadena estándar de cuatro pasos, que el CAS verificará en cada eslabón.
+
+1. **Expansión alrededor del vacío.** Cada escalar se escribe como su VEV más una fluctuación, por ejemplo
+$$
+\phi_i^0(x) = \frac{1}{\sqrt{2}}\big(v_i + \eta_i(x) + i\,\xi_i(x)\big).
+$$
+El potencial se desarrolla entonces al orden cuadrático en las fluctuaciones; la parte bilineal define el espectro de masas.
+
+2. **Condiciones de tadpole (estacionariedad).** Los VEVs $\{k_1, k_2, v_L, v_R\}$ se fijan exigiendo que el vacío sea un extremo:
+$$
+\frac{\partial V}{\partial v_i}\bigg|_{\mathrm{VEV}} = 0, \qquad v_i \in \{k_1, k_2, v_L, v_R\}.
+$$
+Cuando estas condiciones se satisfacen, los términos lineales en el desarrollo de $V$ —las *tadpoles*— se anulan idénticamente.
+
+3. **Matriz de masa (Hessiano del potencial).** La matriz de masa al cuadrado es el Hessiano de $V$ evaluado en el vacío. Para los escalares **neutros** (componentes reales $\varphi_i = \{\eta_i, \xi_i\}$),
+$$
+\big(M^2\big)_{ij} = \frac{\partial^2 V}{\partial \varphi_i\,\partial \varphi_j}\bigg|_{\mathrm{VEV}}.
+$$
+Para el sector **cargado** los campos son complejos, y se usa la convención de Wirtinger
+$$
+\big(M_+^2\big)_{ij} = \frac{\partial^2 V}{\partial c_i^{+}\,\partial c_j^{-}}\bigg|_{\mathrm{VEV}}, \qquad c^{\pm} = (\phi_2^{\pm}, \chi_L^{\pm}, \phi_1^{\pm}, \chi_R^{\pm}),
+$$
+donde $c_i^+$ y $c_j^-$ se tratan como variables independientes. Las condiciones de tadpole se sustituyen en $M^2$ para eliminar los parámetros de masa $\mu_{1,2}^2$.
+
+4. **Bosones de Goldstone y masas físicas.** Por el teorema de Goldstone, cada generador gauge roto espontáneamente produce un modo de masa nula que se convierte en la polarización longitudinal de un bosón de gauge masivo. En el sector cargado del DLRSM, el rompimiento de $SU(2)_L \times SU(2)_R$ a $U(1)_{\mathrm{em}}$ deja **dos** Goldstones cargados $G_L^\pm, G_R^\pm$ —absorbidos por $W_L^\pm$ y $W_R^\pm$—, de modo que $M_+^2$ debe tener exactamente dos autovalores nulos. Los autovalores no nulos restantes son las masas al cuadrado de los Higgs cargados físicos $H_{L,R}^\pm$.
+
+El problema concreto que le plantearé al LLM es: **deriva las cuatro condiciones de tadpolo, la matriz de masa de los escalares cargados en el límite $v_L = k_2 = 0$, y las masas físicas de los Higgs cargados**.
+
+## Camino A: respuesta directa de un chat
+
+Usé el modelo **Gemini 3.1 Pro** el 2026-08-02 con el siguiente prompt (el mismo que aparece en el Apéndice del post):
+
+> Consider the Doublet Left-Right Symmetric Model with a bidoublet $\Phi = [\phi_1, i\sigma_2\phi_2^*]$ with $\langle\Phi\rangle = \mathrm{diag}(k_1, k_2)$ and doublets $\chi_{L,R}$ with $\langle\chi_{L,R}^0\rangle = v_{L,R}$. The scalar potential is $V = V_\Phi + V_\chi + V_{\Phi\chi}$ where [potencial completo]. Derive: (a) the four tadpole conditions; (b) the charged scalar mass matrix in the basis $(\phi_2^+, \chi_L^+, \phi_1^+, \chi_R^+)$ in the limit $v_L = k_2 = 0$; (c) the physical charged Higgs masses.
+
+La respuesta es impresionante a primera vista: estructura correcta, combinaciones de parámetros plausibles, y las masas físicas finales son las mismas que aparecen en la literatura. Transcribo aquí los resultados principales (abreviados; el texto completo está en el bloque plegado):
+
+::: {.callout-tip appearance="simple" icon=false collapse=true}
+
+## Respuesta completa de Gemini 3.1 Pro (2026-08-02)
+
+> To derive the properties of the scalar sector in this Left-Right Symmetric Model (LRSM), we evaluate the scalar potential $V = V_\Phi + V_\chi + V_{\Phi\chi}$ using the standard field expansions around the vacuum expectation values (VEVs).
+>
+> The bidoublet $\Phi$ and the left/right doublets $\chi_{L,R}$ are given by:
+> $$
+> \Phi = \begin{pmatrix} \phi_1^0 & \phi_2^+ \\ \phi_1^- & \phi_2^0 \end{pmatrix}, \quad
+> \chi_L = \begin{pmatrix} \chi_L^+ \\ \chi_L^0 \end{pmatrix}, \quad
+> \chi_R = \begin{pmatrix} \chi_R^+ \\ \chi_R^0 \end{pmatrix}
+> $$
+> where $\tilde{\Phi} = \sigma_2 \Phi^* \sigma_2 = \begin{pmatrix} \phi_2^{0*} & -\phi_1^+ \\ -\phi_2^- & \phi_1^{0*} \end{pmatrix}$.
+>
+> **(a) The Four Tadpole Conditions.** Minimizing the potential with respect to the non-zero VEVs yields
+> $$
+> \mu_1^2 = 2\lambda_1(k_1^2+k_2^2) + 2\lambda_2k_1^2 + (8\lambda_3+2\lambda_5+2\lambda_6)k_2^2 + (\alpha_1+\alpha_3)(v_L^2+v_R^2),
+> $$
+> and the corresponding equations for $k_2, v_L, v_R$.
+>
+> **(b) Charged Scalar Mass Matrix ($v_L = k_2 = 0$).** In the basis $(\phi_2^+, \chi_L^+, \phi_1^+, \chi_R^+)$,
+> $$
+> M^2 = \begin{pmatrix}
+> (\alpha_2-\alpha_3) v_R^2 & 0 & 0 & (\alpha_2-\alpha_3) k_1 v_R \\
+> 0 & (\rho_2-2\rho_1) v_R^2 + (\alpha_2-\alpha_3) k_1^2 & 0 & 0 \\
+> 0 & 0 & 0 & 0 \\
+> (\alpha_2-\alpha_3) k_1 v_R & 0 & 0 & (\alpha_2-\alpha_3) k_1^2
+> \end{pmatrix}.
+> $$
+>
+> **(c) Physical Charged Higgs Masses.**
+> $$
+> M_{H_1^\pm}^2 = (\rho_2-2\rho_1)v_R^2 + (\alpha_2-\alpha_3)k_1^2, \qquad
+> M_{H_2^\pm}^2 = (\alpha_2-\alpha_3)(v_R^2+k_1^2).
+> $$
+>
+> Gemini identifica $\phi_1^+$ como el bosón de Goldstone $G_L^\pm$ y el bloque $(\phi_2^+, \chi_R^+)$ como la mezcla $G_R^\pm/H_2^\pm$.
+
+:::
+
+La respuesta es **superficialmente correcta**: las masas finales coinciden con las ecuaciones publicadas en @ZelenyMora:2026 [Eq. (13)]. El problema es que, como lector, no puedo saber si la estructura de la matriz es correcta sin rehacer el cálculo. Los errores que el modelo comete son del tipo más difícil de detectar: no son errores gramaticales ni inconsistencias obvias; son **errores silenciosos** que se esconden en una estructura que parece correcta.
+
+## Camino B: LLM + CAS con SymPy
+
+El mismo problema se le plantea al LLM en un modo diferente: **"no me des la respuesta; escríbeme el código SymPy que la calcula"**. El código se muestra en la celda siguiente (plegado) y se ejecuta como parte del post. La tabla relaciona cada paso teórico de la sección [Definiciones](#definiciones-del-potencial-a-las-masas) con la construcción de SymPy que lo implementa y la comprobación que realiza el CAS:
+
+| Paso teórico | En el código | Qué verifica el CAS |
+|---|---|---|
+| 0. Codificar el potencial $V$ | campos como objetos `Matrix`; `trace(...)` construye $V_\Phi+V_\chi+V_{\Phi\chi}$ | — |
+| 1. Expansión alrededor del vacío | `V.subs(VEV_all)` fija $\langle\Phi\rangle=\mathrm{diag}(k_1,k_2)$, $\langle\chi^0_{L,R}\rangle=v_{L,R}$ | — |
+| 2. Condiciones de tadpole $\partial V/\partial v_i=0$ | `sp.diff(V0, k1)`, … sobre los cuatro VEVs | coincide con la Eq. (9) de @ZelenyMora:2026 |
+| 3. Matriz de masa (Hessiano de Wirtinger) | `sp.diff(V, c_plus[i], c_minus[j])`; $\mu_{1,2}^2$ eliminadas con las condiciones de tadpole | estructura de $M_+^2$ en el límite $v_L=k_2=0$ |
+| 4. Goldstones y masas físicas | `M_charged.charpoly(lam)` | $\lambda^2(\lambda-m^2_{H_L^\pm})(\lambda-m^2_{H_R^\pm})$: dos modos nulos + Eq. (13) |
+
+Dos decisiones de diseño reflejan la teoría directamente. Primera: cada campo complejo y su conjugada se declaran como **símbolos reales independientes** — `phi1m` y `phi1mc`, `chiL` y `chiLc`, … Esto es exactamente la prescripción de Wirtinger del paso 3: $c_i^+$ y $c_j^-$ son variables independientes, de modo que el Hessiano `sp.diff(V, c_plus[i], c_minus[j])` deriva respecto a un campo y su conjugada como si no estuvieran relacionados. Segunda: la comprobación de Goldstone del paso 4 no le pide a SymPy autovalores — los autovalores simbólicos de una matriz $4\times4$ pueden ser radicales ingobernables — sino que compara el **polinomio característico** con $\lambda^2(\lambda-m^2_{H_L^\pm})(\lambda-m^2_{H_R^\pm})$, una identidad polinomial que `simplify` puede decidir exactamente, convirtiendo "¿hay exactamente dos modos nulos?" en álgebra. Cada `assert` es una comprobación de este tipo; si falla, la celda lanza una excepción en lugar de producir una respuesta silenciosamente incorrecta.
+
+```{python}
+#| code-fold: true
+#| code-summary: "Mostrar el código SymPy"
+import sympy as sp
+from sympy import symbols, Matrix, simplify, factor, trace, expand
+from IPython.display import display, Math
+
+# --- Símbolos ---------------------------------------------------------------
+# Trabajamos con variables reales para cada campo complejo y su conjugada.
+phi10, phi10c = symbols('phi10 phi10c', real=True)   # phi_1^0, phi_1^{0*}
+phi20, phi20c = symbols('phi20 phi20c', real=True)   # phi_2^0, phi_2^{0*}
+phi1m, phi1mc = symbols('phi1m phi1mc', real=True)   # phi_1^-, phi_1^+
+phi2m, phi2mc = symbols('phi2m phi2mc', real=True)   # phi_2^-, phi_2^+
+chiL, chiLc     = symbols('chiL chiLc', real=True)   # chi_L^+, chi_L^-
+chiR, chiRc     = symbols('chiR chiRc', real=True)   # chi_R^+, chi_R^-
+chiLn, chiLnc  = symbols('chiLn chiLnc', real=True) # chi_L^0, chi_L^{0*}
+chiRn, chiRnc  = symbols('chiRn chiRnc', real=True) # chi_R^0, chi_R^{0*}
+
+mu1sq, mu2sq = symbols('{{\\mu_{1}^2}} {{\\mu_{2}^2}}', positive=True)
+lam1, lam2, lam3, lam4, lam5, lam6 = symbols('lambda_1 lambda_2 lambda_3 lambda_4 lambda_5 lambda_6', real=True)
+rho1, rho2 = symbols('rho1 rho2', real=True)
+alpha1, alpha2, alpha3 = symbols('alpha1 alpha2 alpha3', real=True)
+
+k1, k2, vL, vR = symbols('k_1 k_2 v_L v_R', positive=True)
+
+# --- Matrices del bidoblete y dobletes --------------------------------------
+# Phi = [phi_1, i*sigma2*phi_2^*]
+Phi = Matrix([
+    [phi10, phi2mc],
+    [phi1m, -phi20c]
+])
+Phi_dag = Matrix([
+    [phi10c, phi1mc],
+    [phi2m,  -phi20]
+])
+
+I = sp.I
+sigma2 = Matrix([[0, -I], [I, 0]])
+Phi_star = Matrix([[phi10c, phi2m], [phi1mc, -phi20]])
+tilde_Phi = sigma2 * Phi_star * sigma2
+tilde_Phi_dag = sigma2 * Phi.T * sigma2
+
+chi_L = Matrix([[chiL], [chiLn]])
+chi_L_dag = Matrix([[chiLc, chiLnc]])
+chi_R = Matrix([[chiR], [chiRn]])
+chi_R_dag = Matrix([[chiRc, chiRnc]])
+
+# --- Potencial escalar -------------------------------------------------------
+V_Phi = (
+    -mu1sq * trace(Phi_dag * Phi)
+    + lam1 * trace(Phi_dag * Phi)**2
+    + lam2 * trace(Phi_dag * Phi * Phi_dag * Phi)
+    + sp.Rational(1,2) * lam3 * (trace(Phi_dag * tilde_Phi) + trace(tilde_Phi_dag * Phi))**2
+    + sp.Rational(1,2) * lam4 * (trace(Phi_dag * tilde_Phi) - trace(tilde_Phi_dag * Phi))**2
+    + lam5 * trace(Phi_dag * Phi * tilde_Phi_dag * tilde_Phi)
+    + sp.Rational(1,2) * lam6 * (trace(Phi_dag * tilde_Phi * Phi_dag * tilde_Phi)
+                               + trace(tilde_Phi_dag * Phi * tilde_Phi_dag * Phi))
+)
+
+V_chi = (
+    -mu2sq * (chi_L_dag.dot(chi_L) + chi_R_dag.dot(chi_R))
+    + rho1 * (chi_L_dag.dot(chi_L)**2 + chi_R_dag.dot(chi_R)**2)
+    + rho2 * (chi_L_dag.dot(chi_L)) * (chi_R_dag.dot(chi_R))
+)
+
+V_Phi_chi = (
+    alpha1 * trace(Phi_dag * Phi) * (chi_L_dag.dot(chi_L) + chi_R_dag.dot(chi_R))
+    + alpha2 * (chi_L_dag * Phi * Phi_dag * chi_L + chi_R_dag * Phi_dag * Phi * chi_R)[0]
+    + alpha3 * (chi_L_dag * tilde_Phi * tilde_Phi_dag * chi_L
+                + chi_R_dag * tilde_Phi_dag * tilde_Phi * chi_R)[0]
+)
+
+V = expand(V_Phi + V_chi + V_Phi_chi)
+
+# --- Tadpole: verificación contra la Eq. (9) del artículo -----------------
+VEV_all = {
+    phi10: k1, phi10c: k1, phi20: k2, phi20c: k2,
+    phi1m: 0, phi1mc: 0, phi2m: 0, phi2mc: 0,
+    chiL: 0, chiLc: 0, chiR: 0, chiRc: 0,
+    chiLn: vL, chiLnc: vL, chiRn: vR, chiRnc: vR
+}
+V0 = V.subs(VEV_all)
+
+lam12 = lam1 + lam2
+lam1356 = lam1 + 4*lam3 + lam5 + lam6
+alpha12 = alpha1 + alpha2
+alpha13 = alpha1 + alpha3
+
+paper_tadpoles = {
+    'k1': 2*k1*(-mu1sq + 2*k1**2*lam12 + 2*k2**2*lam1356 + (vL**2 + vR**2)*alpha13),
+    'k2': 2*k2*(-mu1sq + 2*k1**2*lam1356 + 2*k2**2*lam12 + (vL**2 + vR**2)*alpha12),
+    'vL': 2*vL*(-mu2sq + 2*rho1*vL**2 + rho2*vR**2 + k1**2*alpha13 + k2**2*alpha12),
+    'vR': 2*vR*(-mu2sq + 2*rho1*vR**2 + rho2*vL**2 + k1**2*alpha13 + k2**2*alpha12),
+}
+
+tadpoles = {
+    'k1': sp.diff(V0, k1),
+    'k2': sp.diff(V0, k2),
+    'vL': sp.diff(V0, vL),
+    'vR': sp.diff(V0, vR),
+}
+
+for key in tadpoles:
+    diff = simplify(tadpoles[key] - paper_tadpoles[key])
+    assert diff == 0, f"Tadpole {key} no coincide con la literatura: {diff}"
+
+print("✓ Condiciones de tadpole: coinciden con la Eq. (9) de Zeleny-Mora et al. (2026)\n")
+for label, key in [(r"k_1", "k1"), (r"k_2", "k2"), (r"v_L", "vL"), (r"v_R", "vR")]:
+    display(Math(rf"\frac{{\partial V}}{{\partial {label}}} = " + sp.latex(factor(tadpoles[key]))))
+
+# --- Solución para mu1^2 y mu2^2 en el límite vL = k2 = 0 ------------------
+mu1sq_sol = sp.solve(sp.Eq(tadpoles['k1'].subs({k2:0, vL:0}), 0), mu1sq)[0]
+mu2sq_sol = sp.solve(sp.Eq(tadpoles['vR'].subs({k2:0, vL:0}), 0), mu2sq)[0]
+
+assert simplify(mu1sq_sol - (2*k1**2*lam12 + vR**2*alpha13)) == 0
+assert simplify(mu2sq_sol - (2*rho1*vR**2 + k1**2*alpha13)) == 0
+print("✓ Parámetros de masa en el límite $v_L = k_2 = 0$:\n")
+display(Math(r"\mu_1^2 = " + sp.latex(mu1sq_sol)))
+display(Math(r"\mu_2^2 = " + sp.latex(mu2sq_sol)))
+
+# --- Matriz de masa cargada -------------------------------------------------
+# Base c+ = (phi2+, chiL+, phi1+, chiR+)
+# Correspondencia: phi2+ = phi2mc, chiL+ = chiL, phi1+ = phi1mc, chiR+ = chiR
+c_plus = [phi2mc, chiL, phi1mc, chiR]
+c_minus = [phi2m, chiLc, phi1m, chiRc]
+
+M_charged = Matrix([[sp.diff(V, c_plus[i], c_minus[j]) for j in range(4)] for i in range(4)])
+
+VEV_charged = {
+    phi10: k1, phi10c: k1, phi20: 0, phi20c: 0,
+    phi1m: 0, phi1mc: 0, phi2m: 0, phi2mc: 0,
+    chiL: 0, chiLc: 0, chiR: 0, chiRc: 0,
+    chiLn: 0, chiLnc: 0, chiRn: vR, chiRnc: vR
+}
+M_charged = M_charged.subs(VEV_charged).subs({mu1sq: mu1sq_sol, mu2sq: mu2sq_sol})
+M_charged = simplify(M_charged)
+
+print("\nMatriz de masa cargada (base $c^+ = (\\phi_2^+, \\chi_L^+, \\phi_1^+, \\chi_R^+)$):")
+display(Math(r"M_+^2 = " + sp.latex(M_charged)))
+
+# --- Verificación física: masas y Goldstones ---------------------------------
+alpha23 = alpha2 - alpha3
+rho21 = rho2 - 2*rho1
+
+# Masas físicas esperadas de la Eq. (13)
+mH1_sq = k1**2*alpha23 + vR**2*rho21
+mH2_sq = alpha23*(k1**2 + vR**2)
+
+# Verificación física: dos Goldstones y dos masas físicas correctas.
+# El polinomio característico debe ser lambda^2 * (lambda - mH1^2) * (lambda - mH2^2).
+# Este es un test más robusto que contar autovalores nulos de forma simbólica,
+# porque SymPy puede devolver una expresión complicada que simplifica a cero.
+lam = symbols('lam')
+char_poly = M_charged.charpoly(lam).as_expr()
+expected_poly = lam**2 * (lam - mH1_sq) * (lam - mH2_sq)
+assert simplify(expand(char_poly - expected_poly)) == 0
+print("\n✓ Polinomio característico: $\\lambda^2 (\\lambda - m^2_{H_L})(\\lambda - m^2_{H_R})$")
+print("  → dos autovalores nulos (Goldstones) y dos masas físicas\n")
+print("Masas físicas cargadas:")
+display(Math(r"m^2_{H_L^\pm} = " + sp.latex(mH1_sq)))
+display(Math(r"m^2_{H_R^\pm} = " + sp.latex(mH2_sq)))
+```
+
+## Comparación de los dos caminos
+
+La diferencia es sutil pero decisiva. El modelo de chat entrega una respuesta que **pasa una revisión rápida**: las masas finales son correctas y la notación es la del artículo. Sin embargo, la respuesta tiene las propiedades que hacen peligrosa a un LLM en física:
+
+- **Es opaca.** No hay un camino reproducible para llegar a ella. Para saber si está bien, el lector debe rehacer todo el álgebra.
+- **Es frágil en la estructura.** Aunque las masas finales coincidan, la asignación de los campos a los estados físicos (Goldstone vs. Higgs) depende de la estructura exacta de la matriz. Sin el CAS, un signo, un intercambio de columnas o un factor de 2 pueden pasar desapercibidos.
+- **No se puede auditar.** No hay un botón "reproducir".
+
+En contraste, el flujo LLM+CAS produce:
+
+- **Transparencia total.** El código es el cálculo; cualquiera puede ejecutarlo.
+- **Verificación automática.** Cada `assert` es una comprobación que el CAS evalúa simbólicamente. Si el LLM hubiera escrito un código con un signo incorrecto, la celda habría fallado con un mensaje de error, no habría producido una respuesta plausible.
+- **Trazabilidad.** La relación entre el potencial, las condiciones de tadpole, la matriz de masa y las masas físicas es explícita y legible.
+
+## Hacia el flujo de trabajo del físico teórico en la era de los LLMs
+
+```{python}
+#| label: fig-workflow
+#| fig-cap: "Flujo de trabajo comparado. Arriba: respuesta directa de un chat — el físico debe verificar a mano, y los errores son silenciosos. Abajo: LLM genera código SymPy, el CAS ejecuta `asserts` simbólicos, y el físico revisa y aprueba el resultado."
+#| code-fold: true
+#| code-summary: "Mostrar el código de la figura"
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+
+paper, ink, accent, grey = "#fcfcfa", "#22262b", "#3a5a7a", "#8a8f96"
+red, green = "#9e4a4a", "#2a6f68"
+
+plt.rcParams.update({
+    "font.family": "serif",
+    "font.size": 10,
+    "axes.edgecolor": ink,
+    "axes.linewidth": 0.8,
+    "figure.facecolor": paper,
+    "axes.facecolor": paper,
+    "savefig.facecolor": paper,
+})
+
+fig, ax = plt.subplots(figsize=(7.2, 5.2))
+ax.set_xlim(0, 10)
+ax.set_ylim(0, 10)
+ax.axis("off")
+
+def box(x, y, w, h, text, color=accent, text_color=paper):
+    rect = FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.05,rounding_size=0.2",
+                          facecolor=color, edgecolor=ink, linewidth=1.2)
+    ax.add_patch(rect)
+    ax.text(x + w/2, y + h/2, text, ha="center", va="center", color=text_color,
+            fontsize=8, weight="bold", wrap=True)
+
+def arrow(x1, y1, x2, y2, color=ink, style="->"):
+    ax.annotate("", xy=(x2, y2), xytext=(x1, y1),
+                arrowprops=dict(arrowstyle=style, color=color, lw=1.2))
+
+# --- Camino A: respuesta directa ---------------------------------------------
+ax.text(1.5, 9.3, "A. Respuesta directa del chat", fontsize=11, weight="bold", color=ink)
+box(0.5, 7.2, 2.2, 1.0, "Pregunta\n(DLRSM)", accent)
+box(3.2, 7.2, 2.0, 1.0, "LLM", "#6b4c7a")
+box(5.7, 7.2, 2.6, 1.0, "Respuesta\n(derivación)", "#b45f06")
+box(8.7, 7.2, 1.2, 1.0, "¿?", red)
+arrow(2.7, 7.7, 3.2, 7.7)
+arrow(5.2, 7.7, 5.7, 7.7)
+arrow(8.3, 7.7, 8.7, 7.7)
+ax.text(5.0, 6.8, "Verificación manual, opaca, propensa a errores silenciosos",
+        ha="center", fontsize=9, color=red, style="italic")
+
+# --- Camino B: LLM + CAS -----------------------------------------------------
+ax.text(1.5, 5.9, "B. Flujo LLM + CAS", fontsize=11, weight="bold", color=ink)
+box(0.5, 3.8, 2.2, 1.0, "Pregunta\n(DLRSM)", accent)
+box(3.2, 3.8, 2.0, 1.0, "LLM →\nSymPy", "#6b4c7a")
+box(5.7, 3.8, 2.0, 1.0, "SymPy\n(ejecuta)", green)
+box(8.2, 3.8, 1.4, 1.0, "asserts\nOK/FAIL", "#b45f06")
+box(5.7, 1.8, 4.2, 1.0, "Físico revisa\ny aprueba", accent)
+
+arrow(2.7, 4.3, 3.2, 4.3)
+arrow(5.2, 4.3, 5.7, 4.3)
+arrow(7.7, 4.3, 8.2, 4.3)
+# Feedback loop
+arrow(8.9, 3.8, 8.9, 2.8, color=grey)
+arrow(8.2, 2.3, 5.7, 2.3, color=grey, style="<-")
+ax.text(5.0, 1.1, "Verificación simbólica automática, reproducible, auditable",
+        ha="center", fontsize=9, color=green, style="italic")
+
+plt.tight_layout()
+```
+
+El caso del DLRSM es un ejemplo limpio del patrón más general. El CAS no reemplaza al físico; define una **división de responsabilidades**:
+
+| Tarea | LLM | CAS | Físico |
+|---|---|---|---|
+| Traducir la pregunta física a un script | Sí | No | Supervisa |
+| Ejecutar álgebra simbólica exacta | No | Sí | Diseña el arnés de verificación |
+| Decidir qué verificar y qué significa físicamente | No | No | Sí |
+| Detectar errores de convención, signos o factores | Parcial | Sí | Sí |
+| Producir una derivación reproducible | Solo como código | Sí | Sí |
+
+Este patrón escala de varias formas. Hoy SymPy cubre el álgebra polinomial del sector escalar; para cálculos de un lazo con funciones de Passarino–Veltman, el mismo flujo apunta a herramientas como FeynCalc, Package-X o LoopTools, con el LLM como **orquestador** entre ellas. Ahí es donde entran trabajos como @Hell:2026, que exploran exactamente esa frontera: no un LLM que resuelva el problema, sino un LLM que escribe el código que el CAS ejecuta y que el físico verifica.
+
+El cambio más profundo es cultural. En el futuro próximo, un estudiante de doctorado en física teórica probablemente dedique menos tiempo a reescribir a mano productos de matrices y más tiempo a:
+
+1. Formular el **potencial** y el **protocolo de verificación**.
+2. Pedirle a un LLM que genere el código CAS.
+3. Ejecutar el código, revisar los `assert` y analizar los casos límite.
+4. Decidir si el resultado tiene sentido físico.
+
+La derivación no desaparece; se convierte en código. Y el código, a diferencia de una respuesta de chat, puede ser **ejecutado, auditado y corregido**.
+
+## Límites honestos
+
+El flujo no es infalible. El CAS solo verifica lo que le pedimos verificar. Si el LLM escribe un código que **tipea correctamente pero codifica la física equivocada** —por ejemplo, usando el invariante incorrecto en el potencial— el `assert` pasará y el resultado físico será malo. El CAS no sustituye el juicio físico; lo formaliza.
+
+También hay limitaciones prácticas:
+
+- **Contexto y longitud:** para potenciales con decenas de parámetros, el prompt puede volverse engorroso.
+- **Rendimiento de SymPy:** integrales de lazo reales o matrices muy grandes escapan fácilmente de lo que SymPy puede hacer en tiempo razonable.
+- **Convenciones:** el LLM puede mezclar convenciones de signo o cargas. El arnés de verificación debe incluir al menos una comprobación de invariancia gauge o de un límite conocido.
+
+El punto no es que el LLM+CAS lo haga todo. El punto es que **convierte la incertidumbre del modelo en una excepción del CAS**, que es mucho más fácil de diagnosticar que una respuesta plausiblemente incorrecta.
+
+::: {.callout-note appearance="simple" icon=false collapse=true}
+## Nota de reproducibilidad
+
+Este post contiene una celda `{python}` ejecutada localmente con SymPy @Meurer:2017. Los resultados congelados ("freeze") se guardan en `_freeze/posts/llm-cas-flujo-de-trabajo/` y se suben junto con el `.qmd`. El runner de CI solo tiene Quarto, sin Python, por lo que cualquier cambio en la celda debe re-renderizarse localmente. El prompt completo a Gemini 3.1 Pro está en el Apéndice; la respuesta transcrita se usó tal cual el 2026-08-02. No se incluyen resultados numéricos de proyectos en curso: el ejemplo usa únicamente las ecuaciones simbólicas publicadas en @ZelenyMora:2026.
+:::
+
+## Apéndice: prompt completo a Gemini 3.1 Pro
+
+El prompt se envió el 2026-08-02 al modelo Gemini 3.1 Pro. El texto de la respuesta se abrevió en el cuerpo del post; aquí se reproduce el prompt completo para que cualquiera pueda repetirlo:
+
+> Consider the Doublet Left-Right Symmetric Model (DLRSM) with a bidoublet $\Phi = [\phi_1, i\sigma_2\phi_2^*]$ where $\phi_i = (\phi_i^0, \phi_i^-)^T$, and $\langle\Phi\rangle = \mathrm{diag}(k_1, k_2)$. The model also contains two doublets $\chi_L = (\chi_L^+, \chi_L^0)^T$ and $\chi_R = (\chi_R^+, \chi_R^0)^T$ with $\langle\chi_L^0\rangle = v_L$ and $\langle\chi_R^0\rangle = v_R$. The scalar potential is $V = V_\Phi + V_\chi + V_{\Phi\chi}$ where
+> $$
+> \begin{aligned}
+> V_\Phi =& -\mu_1^2 \mathrm{Tr}\Phi^\dagger\Phi
+> + \lambda_1 \left(\mathrm{Tr}\Phi^\dagger\Phi\right)^2
+> + \lambda_2 \mathrm{Tr}\Phi^\dagger\Phi\Phi^\dagger\Phi \\&
+> + \frac{\lambda_3}{2}\left(\mathrm{Tr}\Phi^\dagger\tilde\Phi + \mathrm{Tr}\tilde\Phi^\dagger\Phi\right)^2
+> + \frac{\lambda_4}{2}\left(\mathrm{Tr}\Phi^\dagger\tilde\Phi - \mathrm{Tr}\tilde\Phi^\dagger\Phi\right)^2 \\&
+> + \lambda_5 \mathrm{Tr}\Phi^\dagger\Phi\tilde\Phi^\dagger\tilde\Phi
+> + \frac{\lambda_6}{2}\left[\mathrm{Tr}\Phi^\dagger\tilde\Phi\Phi^\dagger\tilde\Phi + \mathrm{h.c.}\right],
+> \end{aligned}
+> $$
+> $$
+> V_\chi = -\mu_2^2\left(\chi_L^\dagger\chi_L + \chi_R^\dagger\chi_R\right)
+> + \rho_1\left[\left(\chi_L^\dagger\chi_L\right)^2 + \left(\chi_R^\dagger\chi_R\right)^2\right]
+> + \rho_2\,\chi_L^\dagger\chi_L\,\chi_R^\dagger\chi_R,
+> $$
+> $$
+> \begin{aligned}
+> V_{\Phi\chi} =& \;\alpha_1\,\mathrm{Tr}\Phi^\dagger\Phi\left(\chi_L^\dagger\chi_L + \chi_R^\dagger\chi_R\right) \\&
+> + \alpha_2\left(\chi_L^\dagger\Phi\Phi^\dagger\chi_L + \chi_R^\dagger\Phi^\dagger\Phi\chi_R\right) \\&
+> + \alpha_3\left(\chi_L^\dagger\tilde\Phi\tilde\Phi^\dagger\chi_L + \chi_R^\dagger\tilde\Phi^\dagger\tilde\Phi\chi_R\right).
+> \end{aligned}
+> $$
+> Derive: (a) the four tadpole conditions; (b) the charged scalar mass matrix in the basis $(\phi_2^+, \chi_L^+, \phi_1^+, \chi_R^+)$ in the limit $v_L = k_2 = 0$; (c) the physical charged Higgs masses.

@@ -255,8 +255,8 @@ mjx-container {
   border-top: 1px solid $rule;
 }
 
-// ---- Abstract box (bilingual abstract at top of posts) ----------------------
-.abstract-alt {
+// ---- Post abstract (same-language summary at top of posts) ------------------
+.post-abstract {
   font-family: $font-family-sans-serif;
   font-size: 0.95rem;
   background: $code-block-bg;
@@ -266,7 +266,7 @@ mjx-container {
   margin: 1.4rem 0 2rem;
   color: $ink-soft;
 }
-.abstract-alt .abstract-label {
+.post-abstract .abstract-label {
   display: inline-block;
   font-size: 0.7rem;
   text-transform: uppercase;
