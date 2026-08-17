@@ -442,7 +442,7 @@ También hay limitaciones prácticas:
 
 - **Contexto y longitud:** para potenciales con decenas de parámetros, el prompt puede volverse engorroso.
 - **Rendimiento de SymPy:** integrales de lazo reales o matrices muy grandes escapan fácilmente de lo que SymPy puede hacer en tiempo razonable.
-- **Convenciones:** el LLM puede mezclar convenciones de signo for $\tilde\Phi$, $\tau$ o cargas. El arnés de verificación debe incluir al menos una comprobación de invariancia gauge o de un límite conocido.
+- **Convenciones:** el LLM puede mezclar convenciones de signo para $\tilde\Phi$, $\tau$ o cargas. El arnés de verificación debe incluir al menos una comprobación de invariancia gauge o de un límite conocido.
 
 El punto no es que el LLM+CAS lo haga todo. El punto es que **convierte la incertidumbre del modelo en una excepción del CAS**, que es mucho más fácil de diagnosticar que una respuesta plausiblemente incorrecta.
 
