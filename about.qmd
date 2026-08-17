@@ -10,27 +10,22 @@ about:
       href: https://github.com/moiseszeleny
     - icon: envelope
       text: Email
-      href: "moiseszeleny@gmail.com"        # TODO: replace placeholder
+      href: "moiseszeleny@gmail.com"
     - icon: mortarboard
       text: ORCID
-      href: "https://orcid.org/0000-0001-5964-3551" # TODO: replace placeholder
+      href: "https://orcid.org/0000-0001-5964-3551"
     - icon: file-earmark-text
       text: arXiv
-      href: "http://arxiv.org/a/zeleny_m_1"      # TODO: replace placeholder
+      href: "http://arxiv.org/a/zeleny_m_1"
     - icon: google
       text: Scholar
-      href: "https://scholar.google.com.mx/citations?user=jCGxHQ0AAAAJ&hl=es" # TODO: replace
+      href: "https://scholar.google.com.mx/citations?user=jCGxHQ0AAAAJ&hl=es"
 execute:
   freeze: auto      # freeze executed output; _freeze/ is committed so CI needs no Python
 format:
   html:
     fig-format: retina
 ---
-
-<!-- =========================================================================
-     PLACEHOLDER BIO — fill these sections in. Everything below is a draft
-     scaffold for you (Moises) to edit. Delete these HTML comments when done.
-     ========================================================================= -->
 
 ## Physics background
 
